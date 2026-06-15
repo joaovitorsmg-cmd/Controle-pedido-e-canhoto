@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Conferência Pedidos e Canhotos — AGROQUIMA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  /* Paleta dark — alinhada ao painel de Vencidos Agroquima */
+  --bg:#0a1322;--bg2:#101d33;--bg3:#16243d;
+  --text:#e8f0fb;--text2:#8ba2c2;--text3:#54667f;
+  --border:#1a2c47;--border2:#27406a;
+  --brand:#2b7fd4;--brand2:#4d96e0;--brand-lt:#0c2a4d;--brand-glow:rgba(43,127,212,.2);
+  --brand-dk:#9cc4ec;
+  --red:#e25c4d;--red-lt:#2a1110;--red-dk:#f08a7e;
+  --green:#35b87a;--green-lt:#0c2417;--green-dk:#5fd4a0;
+  --amber:#e0a73a;--amber-lt:#2a1f08;--amber-dk:#f2c451;
+  --gray:#8696ab;--gray-lt:#101d33;
+  --r:10px;--r-sm:6px;--r-lg:14px;
+  --sh:0 1px 3px rgba(0,0,0,.4);--sh-md:0 6px 18px rgba(0,0,0,.5);
+  --fonte:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  /* Aliases para compatibilidade com código existente */
+  --az1:#0a1322;--az2:#101d33;--az3:#1a3d6e;--az4:#2b7fd4;--az5:#0c2a4d;--az6:#16243d;
+  --verde:var(--green);--vbg:var(--green-lt);--vbd:var(--green);
+  --amar:var(--amber);--abg:var(--amber-lt);--abd:var(--amber);
+  --verm:var(--red);--rbg:var(--red-lt);--rbd:var(--red);
+  --cinza:var(--bg);--c2:var(--border);--c3:var(--text3);--c4:var(--text2);
+  --branco:var(--bg2);--texto:var(--text);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--fonte);background:var(--bg);color:var(--text);font-size:14px;}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--brand)}
+
+/* ===== TOPO ===== */
+#topo{background:var(--bg);border-bottom:1px solid var(--border);
+  padding:0 24px;display:flex;align-items:center;height:60px;gap:16px;
+  position:sticky;top:0;z-index:200;box-shadow:var(--sh-md);}
+.logo{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.logo-box{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  box-shadow:0 2px 10px var(--brand-glow);}
+.logo-box svg{display:block;}
+.logo-txt{font-size:16px;font-weight:800;letter-spacing:.8px;color:var(--text);}
+.logo-sub{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.4px;}
+#topo-mid{flex:1;}
+#topo-titulo{color:var(--text);font-size:13px;font-weight:700;letter-spacing:.4px;}
+#topo-sub{color:var(--text2);font-size:11px;margin-top:1px;}
+.topo-btns{display:flex;gap:7px;align-items:center;}
+.btn-topo{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;
+  border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;
+  border:1px solid var(--border2);background:var(--bg);color:var(--text);
+  transition:.15s;white-space:nowrap;}
+.btn-topo:hover{background:var(--bg2);border-color:var(--brand);}
+.btn-topo.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));
+  border-color:transparent;color:#fff;box-shadow:0 2px 8px var(--brand-glow);}
+.btn-topo.primary:hover{filter:brightness(1.06);}
+.btn-topo.danger{background:var(--bg);border-color:var(--border2);color:var(--gray);}
+.btn-topo.danger:hover{background:var(--red-lt);border-color:var(--red);color:var(--red-dk);}
+
+/* ===== ABAS ===== */
+#abas{background:var(--bg);border-bottom:1px solid var(--border);
+  display:flex;padding:0 20px;overflow-x:auto;gap:0;}
+.aba{padding:0 18px;height:46px;display:inline-flex;align-items:center;
+  color:var(--text2);cursor:pointer;font-size:13px;font-weight:600;
+  border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;
+  position:relative;}
+.aba:hover{color:var(--text);background:var(--bg2);}
+.aba.ativa{color:var(--brand);border-bottom-color:var(--brand);background:var(--brand-lt);}
+
+/* ===== CONTEÚDO ===== */
+#conteudo{padding:22px 24px;max-width:1400px;margin:0 auto;}
+
+/* ===== DROP ZONE ===== */
+#tela-import{text-align:center;padding:60px 20px;}
+#drop-zone{border:2px dashed var(--border2);border-radius:var(--r-lg);padding:48px 40px;
+  background:var(--bg2);cursor:pointer;transition:all .2s;max-width:580px;margin:0 auto;
+  box-shadow:var(--sh-md);}
+#drop-zone.over{border-color:var(--brand);background:var(--brand-lt);}
+#drop-zone h2{color:var(--text);font-size:18px;margin-bottom:8px;}
+#drop-zone p{color:var(--text2);font-size:13px;line-height:1.7;}
+.drop-icon{font-size:44px;margin-bottom:12px;}
+.tipos-arquivo{margin-top:14px;font-size:12px;color:var(--text2);text-align:left;display:inline-block;line-height:2;}
+.btn-az{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+  color:#fff;border:1px solid transparent;padding:9px 18px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;
+  box-shadow:0 2px 8px var(--brand-glow);transition:.15s;}
+.btn-az:hover{filter:brightness(1.06);}
+#file-input{display:none;}
+.arq-status{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.arq-tag{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;}
+.arq-tag.ok{background:var(--green-lt);color:var(--green-dk);}
+.arq-tag.err{background:var(--red-lt);color:var(--red-dk);}
+
+/* ===== SEÇÃO CARD ===== */
+.secao{margin-bottom:22px;}
+.secao-titulo{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--text3);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
+.secao-titulo::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ===== CARDS KPI ===== */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 20px;box-shadow:var(--sh);position:relative;overflow:hidden;
+  border-top:3px solid var(--border);}
+.kpi.g{border-top-color:var(--green);}
+.kpi.g .kpi-val{color:var(--green-dk);}
+.kpi.a{border-top-color:var(--amber);}
+.kpi.a .kpi-val{color:var(--amber-dk);}
+.kpi.r{border-top-color:var(--red);}
+.kpi.r .kpi-val{color:var(--red-dk);}
+.kpi.b{border-top-color:var(--brand);}
+.kpi.b .kpi-val{color:var(--brand-dk);}
+.kpi-label{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.4px;
+  text-transform:uppercase;margin-bottom:9px;}
+.kpi-val{font-size:25px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;
+  color:var(--text);}
+.kpi-sub{font-size:11.5px;color:var(--text2);margin-top:6px;}
+.kpi-bar{height:5px;border-radius:3px;background:var(--bg3);margin-top:10px;overflow:hidden;}
+.kpi-fill{height:100%;border-radius:3px;transition:width .6s;}
+
+/* ===== INFO FILIAL ===== */
+.info-filial{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px 20px;display:flex;flex-wrap:wrap;gap:20px;box-shadow:var(--sh);margin-bottom:16px;
+  border-left:3px solid var(--brand);}
+.if-item{display:flex;flex-direction:column;}
+.if-label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);letter-spacing:.5px;}
+.if-val{font-size:13px;font-weight:700;color:var(--text);}
+
+/* ===== MINI RANKING RESUMO ===== */
+.ranking-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;box-shadow:var(--sh);}
+.ranking-header{background:var(--bg3);color:var(--text2);padding:9px 16px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.7px;display:flex;justify-content:space-between;
+  border-bottom:1px solid var(--border);}
+.ranking-row{display:flex;align-items:center;padding:9px 16px;border-bottom:1px solid var(--border);gap:10px;transition:.1s;}
+.ranking-row:hover{background:var(--bg3);}
+.ranking-row:last-child{border-bottom:none;}
+.ranking-row.pior{background:var(--red-lt);}
+.ranking-pos{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.ranking-pos.top{background:var(--green-lt);color:var(--green-dk);}
+.ranking-pos.bot{background:var(--red-lt);color:var(--red-dk);}
+.ranking-nome{flex:1;font-size:13px;font-weight:600;color:var(--text);}
+.ranking-nome small{color:var(--text3);}
+.ranking-pct{font-size:13px;font-weight:800;min-width:55px;text-align:right;}
+.ranking-bar-wrap{flex:2;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.ranking-bar-fill{height:100%;border-radius:3px;}
+
+/* ===== ALERTA ===== */
+.alerta-box{border-radius:var(--r-sm);padding:10px 16px;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;border:1px solid;}
+.alerta-box.verm{background:var(--red-lt);color:var(--red-dk);border-color:var(--red);}
+.alerta-box.amar{background:var(--amber-lt);color:var(--amber-dk);border-color:var(--amber);}
+.alerta-box.verde{background:var(--green-lt);color:var(--green-dk);border-color:var(--green);}
+.alerta-icon{font-size:18px;flex-shrink:0;}
+
+/* ===== TABELAS ===== */
+.tab-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:var(--sh);overflow:hidden;margin-bottom:20px;}
+.tab-top{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;
+  border-bottom:1px solid var(--border);background:var(--bg3);}
+.tab-titulo{font-size:13px;font-weight:700;color:var(--text);}
+.tab-acoes{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.btn-exp{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;
+  border:1px solid var(--border2);background:var(--bg);color:var(--text);
+  border-radius:var(--r-sm);font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;}
+.btn-exp:hover{background:var(--bg2);border-color:var(--brand);}
+.btn-exp.small{padding:6px 11px;font-size:12px;}
+.btn-exp.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));
+  border-color:transparent;color:#fff;box-shadow:0 2px 8px var(--brand-glow);}
+.btn-exp.primary:hover{filter:brightness(1.06);background:linear-gradient(135deg,var(--brand),var(--brand2));}
+
+/* Aba Histórico */
+.aba-historico{background:linear-gradient(135deg,#1a3a1a,#14693a)!important;
+  color:#fff!important;font-weight:700!important;}
+.aba-historico.ativa{background:linear-gradient(135deg,#0e2710,#0d4a28)!important;
+  border-bottom:2px solid #8ecfaa!important;}
+.aba-guia{background:linear-gradient(135deg,#2a1a5e,#4a2d9e)!important;
+  color:#fff!important;font-weight:700!important;}
+.aba-guia.ativa{background:linear-gradient(135deg,#1a0e3a,#2d1a6e)!important;
+  border-bottom:2px solid #9b8fe0!important;}
+
+/* Guia interno */
+.guia-secao{margin-bottom:28px;}
+.guia-titulo{font-size:13px;font-weight:800;color:var(--az-medio,#0d2b6e);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;
+  padding-left:10px;border-left:4px solid var(--brand,#2b7fd4);}
+.guia-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.guia-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;border-top:3px solid var(--brand,#2b7fd4);}
+.guia-card.verm{border-top-color:#b01c1c;}
+.guia-card.verde{border-top-color:#14693a;}
+.guia-card.amar{border-top-color:#b86c00;}
+.guia-card .gc-num{font-size:22px;font-weight:900;color:var(--brand,#2b7fd4);line-height:1;}
+.guia-card.verm .gc-num{color:#b01c1c;}
+.guia-card.verde .gc-num{color:#14693a;}
+.guia-card.amar .gc-num{color:#b86c00;}
+.guia-card .gc-titulo{font-size:11px;font-weight:700;color:var(--text);
+  margin:4px 0 6px;text-transform:uppercase;letter-spacing:.4px;}
+.guia-card .gc-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+.guia-card .gc-nota{font-size:11px;color:var(--text3);margin-top:6px;
+  padding-top:6px;border-top:1px solid var(--border);font-style:italic;}
+.guia-alerta{background:var(--verm-bg,#fdeaea);border-left:4px solid #b01c1c;
+  padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:16px;
+  font-size:12px;color:#b01c1c;font-weight:600;}
+.guia-info{background:var(--az-cl,#e8f0fb);border-left:4px solid var(--brand,#2b7fd4);
+  padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:16px;
+  font-size:12px;color:var(--az-medio,#0d2b6e);}
+.guia-tabela{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.guia-tabela th{background:var(--az-medio,#0d2b6e);color:#fff;padding:7px 10px;
+  text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;}
+.guia-tabela td{padding:6px 10px;border-bottom:1px solid var(--border);}
+.guia-tabela tr:nth-child(even) td{background:var(--bg2);}
+.tag-leigo{background:#e8f4ec;color:#14693a;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;margin-left:6px;}
+.tag-dev{background:#e8f0fb;color:#0d2b6e;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;margin-left:6px;}
+#tb-hist th{background:var(--az-esc,#0a1322);color:#fff;padding:8px 10px;
+  text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.3px;position:sticky;top:0;white-space:nowrap;}
+#tb-hist td{padding:7px 10px;border-bottom:1px solid var(--border);
+  font-size:12px;white-space:nowrap;}
+#tb-hist tr:nth-child(even) td{background:var(--bg2);}
+#tb-hist tr:hover td{background:var(--az-cl,#e8f0fb);}
+.hist-score{font-weight:900;font-size:14px;border-radius:6px;
+  padding:3px 10px;display:inline-block;}
+.hist-score.s-ouro{background:#fff3cd;color:#856404;}
+.hist-score.s-verde{background:#d4edda;color:#155724;}
+.hist-score.s-amar{background:#fff3cd;color:#856404;}
+.hist-score.s-verm{background:#f8d7da;color:#721c24;}
+.hist-kpi-card{background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 16px;min-width:120px;
+  border-top:3px solid var(--brand);}
+.hist-kpi-card .kl{font-size:9px;font-weight:700;text-transform:uppercase;
+  color:var(--text3);letter-spacing:.5px;}
+.hist-kpi-card .kv{font-size:20px;font-weight:900;color:var(--text);}
+.btn-del-hist{background:none;border:none;color:var(--text3);cursor:pointer;
+  padding:2px 6px;border-radius:4px;font-size:13px;}
+.btn-del-hist:hover{background:var(--verm-bg,#fdeaea);color:var(--verm,#b01c1c);}
+.btn-limpar{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;
+  border:1px solid var(--border2);background:var(--bg);color:var(--gray);
+  border-radius:var(--r-sm);font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;}
+.btn-limpar:hover{background:var(--red-lt);border-color:var(--red);color:var(--red-dk);}
+table{width:100%;border-collapse:collapse;}
+thead th{position:sticky;top:0;background:var(--bg3);color:var(--text2);padding:10px 13px;
+  text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+  border-bottom:1px solid var(--border);white-space:nowrap;user-select:none;z-index:2;}
+thead th.sortable{cursor:pointer;transition:.12s;}
+thead th.sortable:hover{background:var(--brand-lt);color:var(--brand);}
+thead th .si{margin-left:4px;opacity:.7;font-size:9px;}
+thead th.asc .si::after{content:'▲';}
+thead th.desc .si::after{content:'▼';}
+thead th:not(.asc):not(.desc) .si::after{content:'⇅';}
+tbody tr{border-bottom:1px solid var(--border);transition:.1s;}
+tbody tr:hover:not(.tr-det):not(.tr-tot){background:var(--bg3);}
+tbody td{padding:9px 13px;font-size:13px;color:var(--text);font-variant-numeric:tabular-nums;}
+.tr-det{background:var(--bg)!important;}
+.tr-det td{padding:0!important;}
+.det-inner{padding:10px 18px 14px 32px;}
+.det-tit{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:7px;}
+/* Seção de pedidos não contabilizados no detalhe */
+.det-na-tit{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.5px;margin:10px 0 5px;display:flex;align-items:center;gap:6px;}
+.det-na-tit::before{content:'';display:inline-block;width:8px;height:8px;
+  border-radius:50%;background:var(--text3);}
+.badge-na{display:inline-flex;align-items:center;gap:4px;padding:1px 7px 1px 4px;
+  border-radius:10px;font-size:10px;font-weight:700;background:var(--bg);
+  border:1px solid var(--border2);color:var(--text3);cursor:default;}
+.badge-na::before{content:'○';font-size:9px;}
+tr.tr-na td{color:var(--text3);font-style:italic;}
+.det-table{width:100%;border-collapse:collapse;font-size:12px;}
+.det-table th{background:var(--bg3);color:var(--text2);padding:6px 11px;font-weight:700;
+  font-size:11px;text-align:left;border-bottom:1px solid var(--border);}
+.det-table td{padding:6px 11px;border-bottom:1px solid var(--border);color:var(--text);}
+.det-table tr:last-child td{border-bottom:none;}
+.tr-tot{background:var(--brand-lt)!important;border-top:1px solid var(--brand)!important;}
+.tr-tot td{font-weight:800;color:var(--brand-dk)!important;font-size:13px;}
+.caixas{display:flex;gap:8px;padding:10px 16px;background:var(--bg);
+  border-top:1px solid var(--border);flex-wrap:wrap;}
+.caixa{background:var(--amber-lt);border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:5px 14px;text-align:center;}
+.caixa-l{font-size:9px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.5px;}
+.caixa-v{font-size:15px;font-weight:800;color:var(--amber-dk);}
+.btn-det{display:inline-flex;align-items:center;gap:4px;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:3px 9px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;
+  white-space:nowrap;transition:.12s;}
+.btn-det:hover{border-color:var(--brand);color:var(--brand);}
+/* Badges / pills */
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px;}
+.bg{background:var(--green-lt);color:var(--green-dk);}
+.br{background:var(--red-lt);color:var(--red-dk);}
+.ba{background:var(--amber-lt);color:var(--amber-dk);}
+.baz{background:var(--brand-lt);color:var(--brand-dk);}
+.tag-sem{display:inline-block;padding:1px 7px;background:var(--amber-lt);
+  border:1px solid var(--amber);border-radius:10px;font-size:9px;font-weight:700;
+  color:var(--amber-dk);margin-left:4px;}
+
+/* ===== ABA APRESENTAÇÃO ===== */
+.apres{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:28px 32px;box-shadow:var(--sh-md);}
+.apres-filial{font-size:26px;font-weight:900;color:var(--text);letter-spacing:.5px;}
+.apres-periodo{font-size:12px;color:var(--text3);margin-top:2px;margin-bottom:20px;}
+.apres-resp{display:flex;flex-wrap:wrap;gap:16px;padding:12px 16px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px;}
+.ar-item{display:flex;flex-direction:column;}
+.ar-l{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text3);letter-spacing:.5px;}
+.ar-v{font-size:13px;font-weight:700;color:var(--text);}
+.apres-blocos{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;}
+.apres-bloco{border:1px solid var(--border);background:var(--bg3);border-radius:var(--r);padding:20px;}
+.apb-titulo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--text3);margin-bottom:14px;}
+.apb-num{font-size:48px;font-weight:900;line-height:1;letter-spacing:-.5px;
+  font-variant-numeric:tabular-nums;}
+.apb-num.verm{color:var(--red-dk);}
+.apb-num.verde{color:var(--green-dk);}
+.apb-num.amar{color:var(--amber-dk);}
+.apb-sub{font-size:12px;color:var(--text3);margin-top:2px;margin-bottom:14px;}
+.apb-linha{display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.apb-linha:last-child{border-bottom:none;}
+.apb-lv{font-weight:700;color:var(--text);}
+.apb-lv.pend{color:var(--red-dk);}
+.apb-lv.ok{color:var(--green-dk);}
+.apb-alert-r{background:var(--red-lt);border:1px solid var(--red);color:var(--red-dk);
+  border-radius:var(--r-sm);padding:8px 12px;font-size:12px;font-weight:700;margin-top:10px;text-align:center;}
+.apb-alert-g{background:var(--green-lt);border:1px solid var(--green);color:var(--green-dk);
+  border-radius:var(--r-sm);padding:8px 12px;font-size:12px;font-weight:700;margin-top:10px;text-align:center;}
+.apb-tmes{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px;}
+.apb-tmes th{background:var(--bg);color:var(--text2);padding:6px 8px;font-weight:700;
+  text-align:left;border-bottom:1px solid var(--border);}
+.apb-tmes td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text);}
+
+/* ===== UTILS ===== */
+.hidden{display:none!important;}
+.resumo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:700px){.resumo-grid{grid-template-columns:1fr;}}
+/* Texto muted */
+.muted{color:var(--text3);font-size:12px;}
+/* Empty state */
+.empty{padding:32px;text-align:center;color:var(--text3);font-size:13px;}
+
+/* ===== DIAGNÓSTICO DE IMPORTAÇÃO ===== */
+.import-diag{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.import-diag:empty{display:none;}
+
+/* ===== NARRATIVA AUTOMÁTICA ===== */
+.narrativa{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--brand);
+  border-radius:var(--r);padding:18px 22px;margin-bottom:20px;font-size:14px;line-height:1.7;color:var(--text);}
+.narrativa b{color:var(--brand-dk);font-weight:700;}
+.narrativa .nv-pend{color:var(--red-dk);font-weight:700;}
+.narrativa .nv-ok{color:var(--green-dk);font-weight:700;}
+.narrativa h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--text3);margin-bottom:8px;}
+
+/* ===== GRÁFICOS ===== */
+.graf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px;}
+@media(max-width:800px){.graf-grid{grid-template-columns:1fr;}}
+.graf-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 20px;box-shadow:var(--sh);}
+.graf-titulo{font-size:12px;font-weight:700;color:var(--text);margin-bottom:14px;}
+.graf-card canvas{max-height:240px;}
+
+/* ===== RISCO FINANCEIRO ===== */
+.risco-card{background:var(--red-lt);border:1px solid var(--red);border-radius:var(--r);
+  padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:20px;}
+.risco-card.zero{background:var(--green-lt);border-color:var(--green);}
+.risco-val{font-size:34px;font-weight:900;color:var(--red-dk);letter-spacing:-.5px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+.risco-card.zero .risco-val{color:var(--green-dk);}
+.risco-desc{flex:1;font-size:13px;color:var(--text);line-height:1.6;}
+.risco-desc b{color:var(--red-dk);}
+.risco-lista{margin-top:8px;font-size:12px;color:var(--text2);}
+.risco-lista div{padding:3px 0;}
+
+/* ===== AÇÃO BADGE ===== */
+.acao{display:inline-block;padding:3px 10px;border-radius:var(--r-sm);font-size:11px;font-weight:700;}
+.acao-urg{background:var(--red-lt);color:var(--red-dk);border:1px solid var(--red);}
+.acao-aten{background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber);}
+.acao-ok{background:var(--green-lt);color:var(--green-dk);border:1px solid var(--green);}
+.prior-num{width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+.prior-num.baixa{background:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- TOPO -->
+<div id="topo">
+  <div class="logo">
+    <div class="logo-box">
+      <svg viewBox="0 0 42 42" width="22" height="22" aria-hidden="true">
+        <rect x="2"  y="2"  width="17" height="17" rx="3.5" fill="#fff" opacity=".95"/>
+        <rect x="23" y="2"  width="17" height="17" rx="3.5" fill="#bcd6f5"/>
+        <rect x="2"  y="23" width="17" height="17" rx="3.5" fill="#bcd6f5"/>
+        <rect x="23" y="23" width="17" height="17" rx="3.5" fill="#fff" opacity=".95"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-txt">AGROQUIMA</div>
+      <div class="logo-sub">CONFERÊNCIA DE PEDIDOS E CANHOTOS</div>
+    </div>
+  </div>
+  <div id="topo-mid">
+    <div id="topo-titulo">—</div>
+    <div id="topo-sub">Nenhum arquivo importado</div>
+  </div>
+  <div class="topo-btns">
+    <button class="btn-topo primary" onclick="document.getElementById('fi').click()">⬆ Importar Arquivos</button>
+    <button class="btn-topo" onclick="resetarFiltros()" title="Zera ordenações e filtros, mantém os dados">↺ Resetar</button>
+    <button class="btn-topo danger" onclick="descarregarDados()" title="Remove os dados e volta à tela de importação">✕ Descarregar</button>
+    <input type="file" id="fi" multiple accept=".xls,.xlsx" onchange="handleFiles(this.files)" style="display:none"/>
+  </div>
+</div>
+
+<!-- ABAS -->
+<div id="abas">
+  <div class="aba ativa" onclick="mudarAba(0)">📊 Resumo</div>
+  <div class="aba" onclick="mudarAba(1)">📋 Pedidos de Venda</div>
+  <div class="aba" onclick="mudarAba(2)">🌱 Sementes</div>
+  <div class="aba" onclick="mudarAba(3)">📄 Canhotos / Mês</div>
+  <div class="aba" onclick="mudarAba(4)">👤 Canhotos / Vendedor</div>
+  <div class="aba" onclick="mudarAba(5)">🎯 Diagnóstico & Ação</div>
+  <div class="aba" onclick="mudarAba(6)">📌 Apresentação</div>
+  <div class="aba aba-historico" onclick="mudarAba(7)" title="Acumulador de auditorias — uso exclusivo da Auditoria Interna">🗂 Histórico</div>
+  <div class="aba aba-guia" onclick="mudarAba(8)" title="Passo a passo de uso do painel">📖 Guia</div>
+</div>
+
+<!-- CONTEÚDO -->
+<div id="conteudo">
+
+  <!-- TELA IMPORT -->
+  <div id="tela-import">
+    <div id="drop-zone" ondragover="evDrag(event)" ondragleave="dlDrag()" ondrop="dropArq(event)"
+         onclick="document.getElementById('fi').click()">
+      <div class="drop-icon">📂</div>
+      <h2>Importar arquivos do sistema</h2>
+      <p>Arraste ou clique para selecionar os 4 arquivos de uma vez.<br>
+         O painel detecta cada um automaticamente pelo nome do arquivo.</p>
+      <div class="tipos-arquivo">
+        <div>📄 <b>…Pedido.xls</b> — base geral de pedidos</div>
+        <div>📄 <b>…Canhoto.xls</b> — base de notas fiscais</div>
+        <div>📄 <b>…Pedido_Cópia.xls</b> — pedidos sempre pendentes</div>
+        <div>📄 <b>…Sementes.xls</b> — identificação de pedidos semente</div>
+      </div>
+      <br/>
+      <button class="btn-az" onclick="event.stopPropagation();document.getElementById('fi').click()">Selecionar arquivos</button>
+      <div class="arq-status" id="arq-status"></div>
+    </div>
+  </div>
+
+  <!-- PAINEL -->
+  <div id="painel" class="hidden">
+
+    <!-- ABA 0: RESUMO -->
+    <div id="aba-0">
+      <div id="import-diag" class="import-diag"></div>
+      <div class="info-filial" id="info-filial"></div>
+      <div class="kpi-grid" id="kpis" style="margin-bottom:18px;"></div>
+      <div class="resumo-grid">
+        <div>
+          <div class="secao-titulo">Ranking — Pedidos por Vendedor</div>
+          <div class="ranking-wrap" id="rank-pedidos"></div>
+        </div>
+        <div>
+          <div class="secao-titulo">Canhotos por Mês</div>
+          <div class="ranking-wrap" id="rank-canhotos"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 1: PEDIDOS -->
+    <div id="aba-1" class="hidden">
+      <div id="alerta-ped" class="hidden"></div>
+      <div class="tab-wrap">
+        <div class="tab-top">
+          <span class="tab-titulo">Conferência de Pedidos de Venda — por Vendedor</span>
+          <div class="tab-acoes">
+            <button class="btn-exp small" onclick="expandirTodos('tb-ped')">Expandir todos</button>
+            <button class="btn-exp small" onclick="recolherTodos('tb-ped')">Recolher todos</button>
+            <button class="btn-exp primary" onclick="expConferencia('pedidos')" title="Planilha organizada para o supervisor — resumo + pendências">📋 Conferência (Supervisor)</button>
+            <button class="btn-exp" onclick="expPNG('wrap-ped')">PNG</button>
+            <button class="btn-exp" onclick="expPDF('wrap-ped','pedidos')">PDF</button>
+            <button class="btn-limpar" onclick="resetarFiltros()">↺ Resetar</button>
+          </div>
+        </div>
+        <div id="wrap-ped">
+          <table id="tb-ped">
+            <thead><tr>
+              <th style="width:36px"></th>
+              <th class="sortable" onclick="sortTab('tb-ped',1,this)">Vendedor<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-ped',2,this)">Conferidos<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-ped',3,this)">Assinados<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-ped',4,this)">Inconsistentes<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-ped',5,this)">% Assinados<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-ped',6,this)">Sem. Pend.<span class="si"></span></th>
+              <th>Período</th>
+            </tr></thead>
+            <tbody id="body-ped"></tbody>
+          </table>
+          <div class="caixas" id="cxs-ped"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 2: SEMENTES -->
+    <div id="aba-2" class="hidden">
+      <div id="alerta-sem" class="hidden"></div>
+      <div class="tab-wrap">
+        <div class="tab-top">
+          <span class="tab-titulo">Conferência de Pedidos — Sementes — por Vendedor</span>
+          <div class="tab-acoes">
+            <button class="btn-exp small" onclick="expandirTodos('tb-sem')">Expandir todos</button>
+            <button class="btn-exp small" onclick="recolherTodos('tb-sem')">Recolher todos</button>
+            <button class="btn-exp primary" onclick="expConferencia('sementes')" title="Planilha organizada para o supervisor">📋 Conferência (Supervisor)</button>
+            <button class="btn-exp" onclick="expPNG('wrap-sem')">PNG</button>
+            <button class="btn-exp" onclick="expPDF('wrap-sem','sementes')">PDF</button>
+            <button class="btn-limpar" onclick="resetarFiltros()">↺ Resetar</button>
+          </div>
+        </div>
+        <div id="wrap-sem">
+          <table id="tb-sem">
+            <thead><tr>
+              <th style="width:36px"></th>
+              <th class="sortable" onclick="sortTab('tb-sem',1,this)">Vendedor<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-sem',2,this)">Conferidos<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-sem',3,this)">Assinados<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-sem',4,this)">Inconsistentes<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-sem',5,this)">% Assinados<span class="si"></span></th>
+              <th>Período</th>
+            </tr></thead>
+            <tbody id="body-sem"></tbody>
+          </table>
+          <div class="caixas" id="cxs-sem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 3: CANHOTO MÊS -->
+    <div id="aba-3" class="hidden">
+      <div class="tab-wrap">
+        <div class="tab-top">
+          <span class="tab-titulo">Conferência de Canhotos — por Mês</span>
+          <div class="tab-acoes">
+            <button class="btn-exp small" onclick="expandirTodos('tb-cm')">Expandir todos</button>
+            <button class="btn-exp small" onclick="recolherTodos('tb-cm')">Recolher todos</button>
+            <button class="btn-exp primary" onclick="expConferencia('canhotos')" title="Planilha organizada para o supervisor">📋 Conferência (Supervisor)</button>
+            <button class="btn-exp" onclick="expPNG('wrap-cm')">PNG</button>
+            <button class="btn-exp" onclick="expPDF('wrap-cm','canhotos')">PDF</button>
+            <button class="btn-limpar" onclick="resetarFiltros()">↺ Resetar</button>
+          </div>
+        </div>
+        <div id="wrap-cm">
+          <table id="tb-cm">
+            <thead><tr>
+              <th style="width:36px"></th>
+              <th class="sortable" onclick="sortTab('tb-cm',1,this)">Mês<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cm',2,this)">Conferidos<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cm',3,this)">Assinados<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cm',4,this)">Inconsistentes<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cm',5,this)">% Inconsistente<span class="si"></span></th>
+            </tr></thead>
+            <tbody id="body-cm"></tbody>
+          </table>
+          <div class="caixas" id="cxs-cm"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 4: CANHOTO VENDEDOR -->
+    <div id="aba-4" class="hidden">
+      <div class="tab-wrap">
+        <div class="tab-top">
+          <span class="tab-titulo">Conferência de Canhotos — por Vendedor</span>
+          <div class="tab-acoes">
+            <button class="btn-exp small" onclick="expandirTodos('tb-cv')">Expandir todos</button>
+            <button class="btn-exp small" onclick="recolherTodos('tb-cv')">Recolher todos</button>
+            <button class="btn-exp primary" onclick="expConferencia('canhotos')" title="Planilha organizada para o supervisor">📋 Conferência (Supervisor)</button>
+            <button class="btn-exp" onclick="expPNG('wrap-cv')">PNG</button>
+            <button class="btn-exp" onclick="expPDF('wrap-cv','canhotos')">PDF</button>
+            <button class="btn-limpar" onclick="resetarFiltros()">↺ Resetar</button>
+          </div>
+        </div>
+        <div id="wrap-cv">
+          <table id="tb-cv">
+            <thead><tr>
+              <th style="width:36px"></th>
+              <th class="sortable" onclick="sortTab('tb-cv',1,this)">Vendedor<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cv',2,this)">Conferidos<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cv',3,this)">Assinados<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cv',4,this)">Inconsistentes<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-cv',5,this)">% Inconsistente<span class="si"></span></th>
+            </tr></thead>
+            <tbody id="body-cv"></tbody>
+          </table>
+          <div class="caixas" id="cxs-cv"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 5: DIAGNÓSTICO & AÇÃO -->
+    <div id="aba-5" class="hidden">
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px;">
+        <button class="btn-exp primary" onclick="expConferencia('pedidos')" title="Planilha organizada para o supervisor">📋 Conferência (Supervisor)</button>
+        <button class="btn-exp" onclick="expPNG('diag-wrap')">PNG (com gráficos)</button>
+        <button class="btn-limpar" onclick="resetarFiltros()">↺ Resetar</button>
+      </div>
+      <div id="diag-wrap">
+        <!-- Narrativa automática -->
+        <div id="narrativa" class="narrativa"></div>
+
+        <!-- Gráficos -->
+        <div class="graf-grid">
+          <div class="graf-card">
+            <div class="graf-titulo">Tendência mensal — % Assinados (Pedidos)</div>
+            <canvas id="chart-tend"></canvas>
+          </div>
+          <div class="graf-card">
+            <div class="graf-titulo">Desempenho por vendedor — % Assinados</div>
+            <canvas id="chart-vend"></canvas>
+          </div>
+        </div>
+
+        <!-- Risco financeiro -->
+        <div class="secao-titulo">Risco Financeiro — Sementes Pendentes</div>
+        <div id="risco-box"></div>
+
+        <!-- Ranking de clientes -->
+        <div class="secao-titulo">Clientes com Mais Pendências</div>
+        <div class="tab-wrap">
+          <table id="tb-clientes">
+            <thead><tr>
+              <th class="sortable" onclick="sortTab('tb-clientes',0,this)">Cliente<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-clientes',1,this)">Pendências<span class="si"></span></th>
+            </tr></thead>
+            <tbody id="body-clientes"></tbody>
+          </table>
+        </div>
+
+        <!-- Plano de ação -->
+        <div class="secao-titulo">Plano de Ação Priorizado</div>
+        <div class="tab-wrap">
+          <table id="tb-plano">
+            <thead><tr>
+              <th>Prior.</th>
+              <th class="sortable" onclick="sortTab('tb-plano',1,this)">Vendedor<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-plano',2,this)">% Assinados<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-plano',3,this)">Pendentes<span class="si"></span></th>
+              <th class="sortable" onclick="sortTab('tb-plano',4,this)">Sem. Pend.<span class="si"></span></th>
+              <th>Ação Recomendada</th>
+            </tr></thead>
+            <tbody id="body-plano"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 6: APRESENTAÇÃO -->
+    <div id="aba-6" class="hidden">
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+        <button class="btn-exp" onclick="expPNG('apres-wrap')">PNG</button>
+        <button class="btn-exp" onclick="expPDF('apres-wrap','pedidos')">PDF</button>
+        <button class="btn-limpar" onclick="resetarFiltros()">↺ Resetar</button>
+      </div>
+      <div id="apres-wrap" class="apres">
+        <div class="apres-filial" id="ap-filial">—</div>
+        <div class="apres-periodo" id="ap-periodo">—</div>
+        <div class="apres-resp" id="ap-resp"></div>
+        <div id="ap-narrativa" class="narrativa" style="margin:18px 0;"></div>
+        <div class="apres-blocos" id="ap-blocos"></div>
+      </div>
+    </div>
+
+  </div><!-- /painel -->
+
+  <!-- ABA 7: HISTÓRICO — USO EXCLUSIVO AUDITORIA INTERNA -->
+  <div id="aba-7" class="hidden">
+    <div class="tab-wrap">
+      <div class="tab-top" style="align-items:flex-start;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+          <div>
+            <span class="tab-titulo">🗂 Histórico de Auditorias — Acumulador</span>
+            <span style="font-size:11px;color:var(--text3);margin-left:10px;">Uso exclusivo da Auditoria Interna</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn-exp primary" onclick="registrarAuditoria()" id="btn-registrar" title="Registra os resultados da auditoria atual no histórico">
+              ✚ Registrar esta Auditoria
+            </button>
+            <button class="btn-exp" onclick="expHistoricoXLS()" title="Exporta todo o histórico para o Acumulador Excel (.xlsx)">📥 Exportar Acumulador (.xlsx)</button>
+            <button class="btn-exp" onclick="expHistoricoJSON()" title="Exporta o histórico como arquivo .json para reimportar no painel">💾 Salvar Histórico (.json)</button>
+            <button class="btn-exp" onclick="importarHistoricoJSON()" title="Carrega histórico do arquivo .xlsx ou .json gerado por 'Exportar Acumulador'">📂 Carregar Histórico (.xlsx/.json)</button>
+            <button class="btn-exp small" onclick="if(confirm('Limpar TODO o histórico salvo?')){localStorage.removeItem('aqHistorico');H_DADOS=[];renderHistorico();}">🗑 Limpar</button>
+            <input type="file" id="inp-hist-json" accept=".json,.xlsx,.xls" style="display:none" onchange="lerArquivoHistorico(this)">
+          </div>
+        </div>
+        <div id="hist-aviso" style="font-size:12px;color:var(--verm);display:none;padding:4px 8px;background:var(--verm-bg);border-radius:6px;border-left:3px solid var(--verm);">
+          ⚠ Nenhuma auditoria carregada. Importe os arquivos e clique em "Registrar esta Auditoria".
+        </div>
+      </div>
+
+      <!-- KPIs do histórico -->
+      <div id="hist-kpis" class="kpis-row" style="display:none;margin:12px 0;gap:10px;flex-wrap:wrap;"></div>
+
+      <!-- Tabela de auditorias registradas -->
+      <div id="hist-wrap" style="overflow-x:auto;">
+        <div id="hist-vazio" style="padding:40px;text-align:center;color:var(--text3);">
+          <div style="font-size:40px;margin-bottom:8px;">🗂</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">Nenhuma auditoria registrada ainda</div>
+          <div style="font-size:12px;">Importe os arquivos, revise os pedidos e canhotos, depois clique em<br><b>✚ Registrar esta Auditoria</b></div>
+        </div>
+        <table id="tb-hist" style="display:none;width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr>
+              <th style="width:30px">#</th>
+              <th>Filial</th>
+              <th>Período</th>
+              <th>% Ped.</th>
+              <th>Ped. Conf.</th>
+              <th>Ped. Ass.</th>
+              <th>Ped. Pend.</th>
+              <th style="color:var(--verm-text,#b01c1c)">Sem. Pend.</th>
+              <th>% Can.</th>
+              <th>Can. Conf.</th>
+              <th>Can. Ass.</th>
+              <th>Can. Pend.</th>
+              <th>Score</th>
+              <th>Registrado em</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="body-hist"></tbody>
+        </table>
+      </div>
+
+      <!-- Legenda do score -->
+      <div style="margin-top:14px;padding:10px 14px;background:var(--bg2);border-radius:8px;font-size:11px;color:var(--text3);border:1px solid var(--border);">
+        <b>Como o Score é calculado (máx 100 pts):</b> &nbsp;
+        <span style="color:#b01c1c">🔴 Semente 40pts</span> (0 se qualquer pendência) &nbsp;|&nbsp;
+        <span style="color:#0d2b6e">🔵 Pedido 30pts</span> (proporcional à meta ≥95%) &nbsp;|&nbsp;
+        <span style="color:#b86c00">🟡 Vencidos 20pts</span> (assume 100% se não disponível) &nbsp;|&nbsp;
+        <span style="color:#14693a">🟢 Canhoto 10pts</span> (proporcional à meta ≥95%)
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA 8: GUIA DE USO -->
+  <div id="aba-8" class="hidden">
+    <div class="tab-wrap">
+      <div class="tab-top">
+        <span class="tab-titulo">📖 Guia de Uso — Painel de Conferência Agroquima</span>
+      </div>
+
+      <!-- PARA LEIGOS -->
+      <div class="guia-secao">
+        <div class="guia-titulo">Para quem usa o dia a dia <span class="tag-leigo">Gerente / Supervisor / Auxiliar</span></div>
+
+        <div class="guia-info">
+          <b>O que é esse painel?</b> Uma ferramenta que lê os arquivos do sistema e mostra quais pedidos e canhotos (notas fiscais) ainda não foram assinados — sem precisar fazer nada manualmente. Você importa os arquivos, o painel faz todo o trabalho.
+        </div>
+
+        <div class="guia-cards">
+          <div class="guia-card">
+            <div class="gc-num">1</div>
+            <div class="gc-titulo">Baixar os 4 arquivos do sistema</div>
+            <div class="gc-desc">No sistema da Agroquima, exporte 4 relatórios do período auditado:<br><br>
+              📄 <b>Pedido.xls</b> — todos os pedidos<br>
+              📄 <b>Canhoto.xls</b> — todas as notas fiscais<br>
+              📄 <b>Pedido_Copia.xls</b> — pedidos cópia<br>
+              📄 <b>...Sementes...xls</b> — pedidos de semente
+            </div>
+            <div class="gc-nota">Salve os 4 arquivos na mesma pasta antes de importar.</div>
+          </div>
+          <div class="guia-card">
+            <div class="gc-num">2</div>
+            <div class="gc-titulo">Abrir o painel e importar</div>
+            <div class="gc-desc">Abra o arquivo <b>relatorio_canhoto_v2.html</b> no Chrome.<br><br>
+              Clique em <b>↑ Importar Arquivos</b> no topo e selecione os 4 arquivos de uma vez.<br><br>
+              A faixa colorida no topo mostra se todos foram reconhecidos:<br>
+              ✅ Verde = OK | ❌ Vermelho = falta arquivo
+            </div>
+            <div class="gc-nota">Funciona sem internet. Não precisa instalar nada.</div>
+          </div>
+          <div class="guia-card verm">
+            <div class="gc-num">3</div>
+            <div class="gc-titulo">Verificar SEMENTES primeiro — PRIORIDADE</div>
+            <div class="gc-desc">Vá na aba <b>🌱 Sementes</b>.<br><br>
+              A meta é <b>ZERO</b> pendências. Se houver qualquer pedido de semente sem assinatura, acione o Representante Comercial imediatamente — antes do fechamento do período.
+            </div>
+            <div class="gc-nota">⚠ Sementes têm tolerância zero — risco financeiro direto.</div>
+          </div>
+          <div class="guia-card">
+            <div class="gc-num">4</div>
+            <div class="gc-titulo">Analisar pedidos por Representante</div>
+            <div class="gc-desc">Na aba <b>📋 Pedidos de Venda</b>, clique em <b>▶ Detalhar</b> nos representantes com pendências.<br><br>
+              Itens em <span style="color:var(--text3)">cinza</span> com "Não conta" são informativos — <b>não afetam o indicador</b> (ex.: VENDA A VISTA).
+            </div>
+            <div class="gc-nota">Meta: ≥ 95% dos pedidos assinados.</div>
+          </div>
+          <div class="guia-card">
+            <div class="gc-num">5</div>
+            <div class="gc-titulo">Verificar canhotos</div>
+            <div class="gc-desc">Nas abas <b>📄 Canhotos / Mês</b> e <b>👤 Canhotos / Vendedor</b>, identifique as notas sem assinatura e encaminhe para cobrança.</div>
+            <div class="gc-nota">Meta: ≥ 95% dos canhotos assinados.</div>
+          </div>
+          <div class="guia-card verde">
+            <div class="gc-num">6</div>
+            <div class="gc-titulo">Exportar o relatório</div>
+            <div class="gc-desc">Na aba <b>📋 Pedidos de Venda</b>, clique em <b>📋 Conferência (Supervisor)</b>.<br><br>
+              Será gerada uma planilha Excel com:<br>
+              • Aba <b>Resumo</b>: indicadores + desempenho por representante<br>
+              • Aba <b>Pendências</b>: lista detalhada para cobrar
+            </div>
+            <div class="gc-nota">Enviar ao Supervisor Regional e Gerente Administrativo.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARA O AUDITOR -->
+      <div class="guia-secao">
+        <div class="guia-titulo">Para o Auditor Interno <span class="tag-dev">Histórico & Acumulador</span></div>
+
+        <div class="guia-info">
+          A aba <b>🗂 Histórico</b> é exclusiva da Auditoria Interna. Ela acumula os resultados de todas as auditorias realizadas e calcula automaticamente o score de cada filial — sem precisar abrir o Acumulador Excel.
+        </div>
+
+        <div class="guia-cards">
+          <div class="guia-card amar">
+            <div class="gc-num">1</div>
+            <div class="gc-titulo">Registrar a auditoria</div>
+            <div class="gc-desc">Após revisar todos os pedidos e canhotos, vá em <b>🗂 Histórico</b> e clique em <b>✚ Registrar esta Auditoria</b>.<br><br>
+              O painel captura automaticamente: filial, período, % pedidos, sementes, % canhotos e calcula o score.
+            </div>
+            <div class="gc-nota">Se a mesma filial+período já existir, pergunta se quer substituir.</div>
+          </div>
+          <div class="guia-card">
+            <div class="gc-num">2</div>
+            <div class="gc-titulo">Histórico persiste entre sessões</div>
+            <div class="gc-desc">Os registros ficam salvos no browser (localStorage). Ao fechar e reabrir o arquivo, o histórico é restaurado automaticamente.</div>
+            <div class="gc-nota">Atenção: se usar outro computador ou outro browser, use "📂 Carregar Histórico" para importar o JSON.</div>
+          </div>
+          <div class="guia-card verde">
+            <div class="gc-num">3</div>
+            <div class="gc-titulo">Exportar para o Acumulador Excel</div>
+            <div class="gc-desc">Quando quiser consolidar, clique em <b>📥 Exportar Acumulador</b>.<br><br>
+              Será gerado um Excel com:<br>
+              • <b>Lançamentos</b>: todos os registros no formato do Acumulador<br>
+              • <b>Ranking</b>: score médio por filial<br>
+              • <b>Backup JSON</b>: para reimportar depois
+            </div>
+            <div class="gc-nota">O Excel gerado é compatível com o Acumulador_Conferencia_Agroquima.xlsx.</div>
+          </div>
+          <div class="guia-card">
+            <div class="gc-num">4</div>
+            <div class="gc-titulo">Remover ou corrigir um registro</div>
+            <div class="gc-desc">Na tabela do Histórico, clique no <b>✕</b> à direita da linha para remover. Para corrigir, remova e registre novamente com os arquivos corretos importados.</div>
+            <div class="gc-nota">O botão 🗑 Limpar apaga TODO o histórico — use com cuidado.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGRAS DE NEGÓCIO -->
+      <div class="guia-secao">
+        <div class="guia-titulo">Regras principais do painel</div>
+        <table class="guia-tabela">
+          <thead><tr><th>Situação</th><th>Como o painel trata</th><th>Impacto no indicador</th></tr></thead>
+          <tbody>
+            <tr><td><b>VENDA A VISTA</b> (não-semente)</td><td>Exibido em cinza como "Não conta"</td><td>❌ Não conta</td></tr>
+            <tr><td><b>VENDA A VISTA semente</b></td><td>Cobrado normalmente — zero tolerância</td><td>✅ Conta</td></tr>
+            <tr><td><b>CFOP 5116/5117/6116/6117</b> (remessa)</td><td>Ignorado em pedidos — cobrado no canhoto</td><td>✅ Conta no canhoto</td></tr>
+            <tr><td><b>CFOP 5922/6922</b> (faturamento futuro)</td><td>Pedido cobrado; canhoto assinado automático</td><td>✅ Conta no pedido</td></tr>
+            <tr><td><b>Pedido com múltiplas linhas</b></td><td>Agrupado — conta 1 vez só</td><td>✅ 1 pedido = 1 voto</td></tr>
+            <tr><td><b>Pedido Cópia</b></td><td>Sempre pendente (exceto se tipo não cobrável)</td><td>⚠ Sempre pendente</td></tr>
+            <tr><td><b>Representante "ESC.XXXXX"</b></td><td>Escritório externo — ignorado completamente</td><td>❌ Não conta</td></tr>
+            <tr><td><b>Semente pendente</b></td><td>Exibido com valor R$ em risco + prioridade máxima</td><td>🔴 Crítico</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SCORE -->
+      <div class="guia-secao">
+        <div class="guia-titulo">Sistema de score — como é calculado</div>
+        <div class="guia-alerta">⚠ Semente pendente = score semente = 0 pts. Independente do restante, a filial não pode atingir o score máximo.</div>
+        <table class="guia-tabela">
+          <thead><tr><th>Item</th><th>Peso</th><th>Critério</th><th>Fórmula</th></tr></thead>
+          <tbody>
+            <tr><td>🔴 <b>Pedido de Semente</b></td><td><b>40 pts</b></td><td>Zero tolerância</td><td>40 se sem pendências / 0 se qualquer pendência</td></tr>
+            <tr><td>🔵 <b>Pedido de Venda</b></td><td><b>30 pts</b></td><td>Meta ≥ 95%</td><td>MIN(% atingido / 95, 1) × 30</td></tr>
+            <tr><td>🟡 <b>Produtos Vencidos</b></td><td><b>20 pts</b></td><td>Painel Vencidos</td><td>Score informado / 100 × 20 (assume 100% se não disponível)</td></tr>
+            <tr><td>🟢 <b>Canhoto</b></td><td><b>10 pts</b></td><td>Meta ≥ 95%</td><td>MIN(% atingido / 95, 1) × 10</td></tr>
+            <tr style="font-weight:700;background:var(--az-cl)"><td colspan="2"><b>TOTAL MÁXIMO: 100 pts</b></td><td colspan="2">🥇 ≥90 pts | 🟢 ≥75 | 🟡 ≥60 | 🔴 &lt;60</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ARQUIVOS -->
+      <div class="guia-secao">
+        <div class="guia-titulo">Arquivos do sistema e onde extrair</div>
+        <table class="guia-tabela">
+          <thead><tr><th>Arquivo</th><th>Onde extrair no sistema</th><th>Obrigatório?</th></tr></thead>
+          <tbody>
+            <tr><td><b>Pedido.xls</b></td><td>Relatório de Baixa de Canhoto → opção Pedido</td><td>✅ Sim</td></tr>
+            <tr><td><b>Canhoto.xls</b></td><td>Relatório de Baixa de Canhoto → opção Canhoto</td><td>✅ Sim</td></tr>
+            <tr><td><b>Pedido_Copia.xls</b></td><td>Relatório de Pedido Cópia</td><td>✅ Sim</td></tr>
+            <tr><td><b>...Sementes...xls</b></td><td>Relatório Resumo Movimentação CFOP (nome gerado pelo sistema)</td><td>✅ Recomendado</td></tr>
+          </tbody>
+        </table>
+        <div class="gc-nota" style="margin-top:8px;display:block">O painel detecta o tipo de cada arquivo automaticamente pelo nome e pelo conteúdo. Se um arquivo não for reconhecido, verifique se o nome contém a palavra-chave (pedido, canhoto, copia, sementes).</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /conteudo -->
+
+<script>
+// ============================================================
+// BASE REGIONAIS
+// ============================================================
+const BASE=[{filial:1,sigla:"MTZ",loja:"MATRIZ",estado:"GO",gerente:"REVALINO NETO",supervisor:"ERON LUIZ",regional:"SERGIO ADRIANO",auditor:"JOÃO VITOR"},{filial:3,sigla:"ARG",loja:"ARAGUAÍNA",estado:"TO",gerente:"FABIO AUGUSTO",supervisor:"MAGNO ALVES",regional:"LEANDRO CAMPOS",auditor:"CARLOS POGGIAN"},{filial:4,sigla:"RVD",loja:"RIO VERDE",estado:"GO",gerente:"WENDER PARTATA",supervisor:"NATANIELLE VARGAS",regional:"WENDER PARTATA",auditor:"JOÃO VITOR"},{filial:5,sigla:"UBR",loja:"UBERLÂNDIA",estado:"MG",gerente:"JOÃO CLÁUDIO",supervisor:"GISELE MARIA",regional:"NABIO BARROS",auditor:"JOÃO VITOR"},{filial:10,sigla:"MAR",loja:"MARABÁ",estado:"PA",gerente:"ENIO JOSAFE",supervisor:"LUCAS DAMACENO",regional:"LEANDRO CAMPOS",auditor:"GUILHERME"},{filial:11,sigla:"JAT",loja:"JATAI",estado:"GO",gerente:"RENATO TEODORO",supervisor:"LUBIA SILVA",regional:"WENDER PARTATA",auditor:"JOÃO VITOR"},{filial:12,sigla:"CRI",loja:"CRISTALINA",estado:"GO",gerente:"ANDRE FERNANDO",supervisor:"MARCIA DE OLIVEIRA",regional:"NABIO BARROS",auditor:"JOÃO VITOR"},{filial:13,sigla:"FAG",loja:"UBS",estado:"GO",gerente:"EVANDRO MACEDO",supervisor:"KARINE GOMES",regional:"EVANDRO MACEDO",auditor:"FÁBIO"},{filial:14,sigla:"RED",loja:"REDENÇÃO",estado:"PA",gerente:"ANDERSON PEREIRA",supervisor:"BARBARA PEREIRA",regional:"LEANDRO CAMPOS",auditor:"CARLOS POGGIAN"},{filial:16,sigla:"IMP",loja:"IMPERATRIZ",estado:"MA",gerente:"IALE MILHOMEM",supervisor:"ROSIANE CANDIDO",regional:"LEANDRO CAMPOS",auditor:"GUILHERME"},{filial:17,sigla:"BAR",loja:"BARRA DO GARÇAS",estado:"MT",gerente:"VINICIUS BRITO",supervisor:"KARINE SOARES",regional:"MATO GROSSO",auditor:"JOÃO VITOR"},{filial:19,sigla:"PAL",loja:"PALMAS",estado:"TO",gerente:"MARLON GERMANO",supervisor:"PATRICIA PEREIRA",regional:"LEANDRO CAMPOS",auditor:"CARLOS POGGIAN"},{filial:21,sigla:"MOZ",loja:"MOZARLÂNDIA",estado:"GO",gerente:"THIAGO VAZ",supervisor:"NÚBIA GASPAROTTI",regional:"SERGIO ADRIANO",auditor:"JOÃO VITOR"},{filial:22,sigla:"PGM",loja:"PARAGOMINAS",estado:"PA",gerente:"LORENA MOISES",supervisor:"ARTHUR SILVA",regional:"LEANDRO CAMPOS",auditor:"GUILHERME"},{filial:23,sigla:"SFX",loja:"SÃO FELIX DO XINGU",estado:"PA",gerente:"PEDRO MACIEL",supervisor:"LANNA KEROLAYNE",regional:"LEANDRO CAMPOS",auditor:"CARLOS POGGIAN"},{filial:24,sigla:"FAP",loja:"FABRICA APARECIDA",estado:"GO",gerente:"ANNAPAULLA GARCIA",supervisor:"ANNAPAULLA GARCIA",regional:"ANNAPAULLA GARCIA",auditor:"JOÃO VITOR"},{filial:25,sigla:"FCB",loja:"CUIABÁ",estado:"MT",gerente:"GEOVANNY VIGILATO",supervisor:"JULIANA LIMA",regional:"MATO GROSSO",auditor:"FÁBIO"},{filial:27,sigla:"URU",loja:"URUAÇU",estado:"GO",gerente:"EDVANDO JOSE",supervisor:"NIVEA ALVES",regional:"SERGIO ADRIANO",auditor:"FÁBIO"},{filial:28,sigla:"MOR",loja:"MORRINHOS",estado:"GO",gerente:"ABEL HANUN",supervisor:"PAULA REGINA",regional:"NABIO BARROS",auditor:"JOÃO VITOR"},{filial:29,sigla:"CON",loja:"CONFRESA",estado:"MT",gerente:"AKYLLA OLIVEIRA",supervisor:"FELIPE ANDRADE",regional:"MATO GROSSO",auditor:"CARLOS POGGIAN"},{filial:30,sigla:"FOR",loja:"FORMOSA",estado:"GO",gerente:"DANIEL BARREIRA",supervisor:"JULIANA MARIA",regional:"NABIO BARROS",auditor:"FÁBIO"},{filial:31,sigla:"JUS",loja:"JUSSARA",estado:"GO",gerente:"CLESIO ALVES",supervisor:"MARIANNE SAHARA",regional:"SERGIO ADRIANO",auditor:"FÁBIO"},{filial:32,sigla:"XRA",loja:"XINGUARA",estado:"PA",gerente:"WILLIAN ANTIGO",supervisor:"LEONICE MORAIS",regional:"LEANDRO CAMPOS",auditor:"GUILHERME"},{filial:34,sigla:"POR",loja:"PORANGATU",estado:"GO",gerente:"ANTONIO CARLOS",supervisor:"ALLYNE LUCENA",regional:"SERGIO ADRIANO",auditor:"FÁBIO"},{filial:35,sigla:"PLA",loja:"PONTES E LACERDA",estado:"MT",gerente:"MARCELO MULLER",supervisor:"RENATA COSTA",regional:"MATO GROSSO",auditor:"FÁBIO"},{filial:36,sigla:"GRA",loja:"GOIANIRA",estado:"GO",gerente:"HENISLEY SABINO",supervisor:"HENISLEY SABINO",regional:"HENISLEY SABINO",auditor:"FÁBIO"},{filial:37,sigla:"CAN",loja:"CANARANA",estado:"MT",gerente:"LEONARDO FREITAS",supervisor:"INGRID KAROLAYNE",regional:"MATO GROSSO",auditor:"JOÃO VITOR"},{filial:38,sigla:"GUR",loja:"GURUPI",estado:"TO",gerente:"FREDERICO CARRIJO",supervisor:"RENATA CERQUEIRA",regional:"SERGIO ADRIANO",auditor:"FÁBIO"},{filial:40,sigla:"RIA",loja:"RIALMA",estado:"GO",gerente:"NATALINO NETO",supervisor:"ROSILDA CURSINO",regional:"SERGIO ADRIANO",auditor:"FÁBIO"},{filial:41,sigla:"ALT",loja:"ALTAMIRA",estado:"PA",gerente:"DAVID DOURADO",supervisor:"JOSIMARA CABRAL",regional:"LEANDRO CAMPOS",auditor:"GUILHERME"}];
+const MSIGLA={};BASE.forEach(r=>MSIGLA[r.sigla]=r);
+const MFILIAL={};BASE.forEach(r=>MFILIAL[r.filial]=r);
+
+// ============================================================
+// REGRAS DE NEGÓCIO
+// ============================================================
+const TIPOS_NAO_P=new Set(['VENDA A VISTA','TRANSFERENCIA','TRANSFERENCIA (USO E CONSUMO)','TRANSFERENCIA (ATIVO IMOBILIZADO)','TRANSFERENCIA(IMPORTACAO DIRETA PORTO)','USO E CONSUMO PROPRIO','OUTRAS SAIDAS (REFUGO) - A VISTA','OUTRAS SAIDAS (REFUGO) - A PRAZO','OUTRAS SAIDAS','REMESSA DE VASILHAME OU SACARIA','REMESSA P/ DEPOSITO/ARMAZEM','REMESSA SIMBOLICA P/ DEPOSITO/ARMAZEM','REMESSA P/ INDUSTRIALIZACAO','REMESSA DE BRINDES','REMESSA DE AMOSTRA GRATIS','REMESSA SIMBOLICA VENDA ORDEM','BAIXA ESTOQUE DE PRODUTO DETERIORADO','VENDA DE ATIVO IMOBILIZADO - A PRAZO','VENDA DE ATIVO IMOBILIZADO - A VISTA','SIMPLES REMESSA']);
+const TIPOS_NAO_C=new Set([...TIPOS_NAO_P].filter(t=>t!=='VENDA A VISTA'));
+const CFOP_NAO_C=new Set(['5922','6922']);
+// CFOP de REMESSA de entrega futura: nesses casos cobra-se a assinatura da NOTA,
+// não do PEDIDO. Por isso são ignorados na contagem de pedidos.
+const CFOP_REMESSA=new Set(['5116','5117','6116','6117']);
+
+function exCfop(c){const m=String(c||'').trim().match(/^(\d+)/);return m?m[1]:'';}
+function exNum(p){const m=String(p||'').match(/^(\d+)/);return m?m[1]:String(p);}
+function exCod(v){const m=String(v||'').match(/^(\d+)\s*-/);return m?parseInt(m[1]):null;}
+// Detecta se o "vendedor" é na verdade um escritório de outra filial.
+// Padrão real nos dados: "CÓDIGO - ESC.XXXXX" ou "CÓDIGO - ESC XXXXX"
+// (ex.: "1336 - ESC FORMOS", "24 - ESC.MATRIZ"). O cadastro é bagunçado,
+// mas o único padrão confiável é o nome (após o código) começar com "ESC" + espaço/ponto.
+// Esses registros NÃO entram em nenhuma contagem (nem pedido, nem canhoto).
+function ehEscritorio(v){
+  const nome=String(v||'').replace(/^\d+\s*-\s*/,'').trim();
+  return /^ESC[\s.]/i.test(nome) || nome.toUpperCase()==='ESC';
+}
+function nomeLimpo(v){return String(v||'').replace(/^\d+\s*-\s*/,'').trim();}
+
+function stPedido(row,copiaIds,semIds){
+  // Status de UMA linha de pedido (antes do agrupamento).
+  // CFOP de remessa de entrega futura: cobra-se a nota, não o pedido → 'REMESSA' (ignorar)
+  const cfop=exCfop(row.CFOP||row['CFOP']||'');
+  if(CFOP_REMESSA.has(cfop)) return 'REMESSA';
+  const tipo=String(row['TIPO PEDIDO']||'').trim();
+  const num=row._num;
+  const isSem=semIds.has(num);
+  if(!isSem && TIPOS_NAO_P.has(tipo)) return 'NA';
+  if(copiaIds.has(num)) return 'PENDENTE';
+  const ass=String(row['ASS PEDIDO']||'').trim();
+  if(ass==='Pedido Assinado') return 'ASSINADO';
+  if(ass.toLowerCase().includes('não necessária')) return 'NA';
+  return 'PENDENTE';
+}
+
+// Agrupa as linhas por número de pedido e devolve UM registro por pedido,
+// com status final consolidado. Regras (definidas pelo João):
+//  - Linhas de remessa (CFOP 5116/5117/6116/6117) são ignoradas.
+//  - Se o pedido só tem linhas de remessa → não conta (status 'IGNORADO').
+//  - VENDA A VISTA não-semente → sempre NA (desprezado da %). Cópia não muda isso.
+//  - Cópia força PENDENTE SOMENTE se houver ao menos uma linha cobrável não-NA.
+//  - Senão: se alguma cobrável é PENDENTE → PENDENTE; se todas NA → NA; senão ASSINADO.
+function agruparPedidos(){
+  const grupos={};
+  S.pedidos.forEach(r=>{
+    // Ignorar escritórios de filial (ESC.*) — não entram em nenhuma contagem
+    if(ehEscritorio(r.VENDEDOR||r['VENDEDOR'])) return;
+    const num=r._num;
+    if(!grupos[num]) grupos[num]={num,linhas:[],repr:r};
+    grupos[num].linhas.push(r);
+  });
+  const out=[];
+  Object.values(grupos).forEach(g=>{
+    const statusLinhas=g.linhas.map(r=>({r,st:stPedido(r,S.copiaIds,S.semIds)}));
+    const cobraveis=statusLinhas.filter(x=>x.st!=='REMESSA');
+    if(!cobraveis.length){ // só remessa → ignora o pedido
+      out.push({num:g.num,status:'IGNORADO',repr:g.repr,linhaRepr:g.linhas[0],naMotivo:'remessa'});
+      return;
+    }
+    const naoNA=cobraveis.filter(x=>x.st!=='NA');
+    const linhaRepr=(naoNA[0]||cobraveis[0]).r;
+    const isSem=S.semIds.has(g.num);
+    let status,naMotivo=null;
+    if(!naoNA.length){
+      status='NA';
+      // Guardar o motivo para mostrar no tooltip visual
+      const tipo=String(g.repr['TIPO PEDIDO']||'').trim();
+      naMotivo=tipo==='VENDA A VISTA'?'Venda à vista — não contabilizado':
+               tipo.includes('TRANSFERENCIA')?'Transferência — não contabilizado':
+               'Tipo não cobrável — não contabilizado';
+    }else if(S.copiaIds.has(g.num)){
+      status='PENDENTE';
+    }else{
+      status=naoNA.some(x=>x.st==='PENDENTE')?'PENDENTE':'ASSINADO';
+    }
+    out.push({num:g.num,status,repr:linhaRepr,linhaRepr,isSem,naMotivo});
+  });
+  return out;
+}
+function stNota(row){
+  const tipo=String(row['TIPO PEDIDO']||'').trim();
+  const cfop=exCfop(row['CFOP']||'');
+  if(CFOP_NAO_C.has(cfop)) return 'ASSINADO';
+  if(TIPOS_NAO_C.has(tipo)) return 'ASSINADO';
+  const ass=String(row['ASS NOTA']||'').trim();
+  if(ass==='Nota Assinada'||ass.toLowerCase().includes('não necessária')) return 'ASSINADO';
+  return 'PENDENTE';
+}
+
+// ============================================================
+// ESTADO
+// ============================================================
+let S={pedidos:[],canhoto:[],semIds:new Set(),copiaIds:new Set(),semValor:{},semFilial:null,filialManual:null,filialIncerta:false,fi:null,periodo:''};
+let _charts={}; // referências aos gráficos Chart.js para destruir antes de recriar
+
+// ============================================================
+// PROCESSAMENTO DE ARQUIVOS
+// ============================================================
+function detectTipo(nome, colunas){
+  // ESTRATÉGIA EM CAMADAS para máxima robustez:
+  // O nome pode ter o separador alterado pelo navegador/SO (_-_ vira _–_, _—_, " - ").
+  // O prefixo "RelatorioBaixaCanhotoXLS" contém "canhoto" e engana detecção ingênua.
+  // Por isso combinamos detecção por CONTEÚDO (colunas) + nome com várias estratégias.
+
+  // ---- CAMADA 1: CONTEÚDO (infalível para sementes) ----
+  if(colunas && colunas.length){
+    const cl=colunas.map(c=>String(c).toLowerCase());
+    // O arquivo de sementes tem colunas exclusivas que nenhum outro tem
+    if(cl.some(c=>c.includes('n° pedido')||c.includes('n pedido')||c.includes('vlr. prod')||c.includes('vlr prod')))
+      return 'sementes';
+  }
+
+  // ---- CAMADA 2: NOME normalizado ----
+  let n=nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let base=n.replace(/\.[a-z0-9]+$/,'');          // remove extensão
+  base=base.replace(/\s*\(\d+\)\s*$/,'');          // remove " (1)", " (2)"
+
+  // Estratégia A: dividir por QUALQUER tipo de hífen/travessão com espaços/underscores ao redor.
+  // Cobre "_-_", "_–_", "_—_", " - ", "-", etc.
+  const partes=base.split(/[_\s]*[-\u2010\u2011\u2012\u2013\u2014\u2015]+[_\s]*/);
+  const sufixo=partes.length>1?partes[partes.length-1].trim():base;
+  if(sufixo.includes('sement')) return 'sementes';
+  if(sufixo.includes('copia')) return 'copia';
+  if(sufixo.includes('canhoto')) return 'canhoto';
+  if(sufixo.includes('pedido')) return 'pedido';
+
+  // Estratégia B (fallback robusto): remover o prefixo conhecido e os números (timestamp),
+  // depois procurar a palavra-chave no que sobrou. Isso neutraliza o "canhoto" do prefixo
+  // mesmo quando o separador foi corrompido e a Estratégia A não isolou o sufixo.
+  let resto=base;
+  ['relatoriobaixacanhotoxls','relatorioresumomovimentacaocfopxls','relatoriobaixacanhoto']
+    .forEach(pfx=>{ if(resto.startsWith(pfx)) resto=resto.slice(pfx.length); });
+  resto=resto.replace(/\d+/g,''); // remove timestamp
+  if(resto.includes('sement')) return 'sementes';
+  if(resto.includes('copia')) return 'copia';
+  if(resto.includes('canhoto')) return 'canhoto';
+  if(resto.includes('pedido')) return 'pedido';
+
+  return null;
+}
+function lerArq(file,tipoNome){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+        // Reconfirma o tipo usando o CONTEÚDO (colunas) — corrige caso o nome tenha enganado
+        const colunas=rows.length?Object.keys(rows[0]):[];
+        const tipoFinal=detectTipo(file.name,colunas)||tipoNome;
+        res({tipo:tipoFinal,rows,nome:file.name});
+      }catch(er){rej(er);}
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+async function handleFiles(files){
+  const st=document.getElementById('arq-status');
+  st.innerHTML='';
+  const arr=Array.from(files);
+  if(!arr.length) return;
+
+  // Resetar dados antes de carregar novo conjunto (evita misturar importações)
+  Object.values(_charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  _charts={};
+  S={pedidos:[],canhoto:[],semIds:new Set(),copiaIds:new Set(),semValor:{},semFilial:null,filialManual:null,filialIncerta:false,fi:null,periodo:''};
+
+  // Ler todos os arquivos. A detecção inicial pelo nome serve só para enfileirar;
+  // o tipo DEFINITIVO vem de lerArq (que reconfirma pelas colunas do conteúdo).
+  const lts=[];
+  for(const f of arr){
+    const tNome=detectTipo(f.name); // pode ser null; lerArq tenta de novo com colunas
+    lts.push(lerArq(f,tNome));
+  }
+
+  let res;
+  try{ res=await Promise.all(lts); }
+  catch(err){
+    st.innerHTML+=`<span class="arq-tag err">❌ Erro ao ler arquivo: ${err.message}</span>`;
+    return;
+  }
+
+  // Agrupar pelos tipos REAIS (definidos por conteúdo), não pelo nome
+  const porTipo={}; // tipo -> [nomes]
+  res.forEach(r=>{
+    const t=r.tipo;
+    if(!t){
+      st.innerHTML+=`<span class="arq-tag err">❌ ${r.nome} — não reconhecido</span>`;
+      return;
+    }
+    if(!porTipo[t]) porTipo[t]=[];
+    porTipo[t].push(r.nome);
+  });
+
+  // Processar (se houver 2 do mesmo tipo, o último vence — avisamos depois)
+  res.forEach(r=>{
+    if(r.tipo==='pedido') procPedido(r.rows);
+    else if(r.tipo==='canhoto') procCanhoto(r.rows);
+    else if(r.tipo==='sementes') procSementes(r.rows);
+    else if(r.tipo==='copia') procCopia(r.rows);
+  });
+
+  // ===== DIAGNÓSTICO DE IMPORTAÇÃO (transparência total) =====
+  const nomeTipo={pedido:'Pedidos',canhoto:'Canhotos',sementes:'Sementes',copia:'Pedido Cópia'};
+  const contagem={pedido:S.pedidos.length,canhoto:S.canhoto.length,sementes:S.semIds.size,copia:S.copiaIds.size};
+  let diag='';
+  ['pedido','canhoto','sementes','copia'].forEach(t=>{
+    if(porTipo[t]){
+      const conflito=porTipo[t].length>1;
+      diag+=`<span class="arq-tag ${conflito?'err':'ok'}">${conflito?'⚠':'✔'} ${nomeTipo[t]}: ${contagem[t]} reg.${conflito?' (2 arquivos! último usado)':''}</span>`;
+    }
+  });
+  // Avisar tipos ausentes
+  ['pedido','canhoto'].forEach(t=>{
+    if(!porTipo[t]) diag+=`<span class="arq-tag err">❌ Faltou: ${nomeTipo[t]}</span>`;
+  });
+  if(!porTipo['sementes']) diag+=`<span class="arq-tag err">⚠ Sem arquivo de Sementes — não dá para checar sementes pendentes</span>`;
+  if(!porTipo['copia']) diag+=`<span class="arq-tag err">⚠ Sem arquivo Pedido Cópia</span>`;
+  st.innerHTML=diag;
+  // Espelhar no painel (fica visível após renderizar, no topo do Resumo)
+  const diagPainel=document.getElementById('import-diag');
+  if(diagPainel) diagPainel.innerHTML=diag;
+
+  // Se faltou o essencial (pedido), não renderiza
+  if(!porTipo['pedido'] && !porTipo['canhoto']){
+    st.innerHTML+=`<div style="margin-top:10px;color:var(--red-dk);font-weight:700">Nenhum arquivo de Pedido ou Canhoto válido. Verifique os arquivos e tente de novo.</div>`;
+    return;
+  }
+
+  renderTudo();
+}
+function procPedido(rows){
+  S.pedidos=rows.map(r=>({...r,_num:exNum(r.PEDIDO||r['PEDIDO'])}));
+}
+function procCanhoto(rows){
+  S.canhoto=rows.map(r=>{
+    const d=r['DT EMISSAO NF']||r['DT EMISSAO NF ']||'';
+    let mes='';
+    if(d){const dt=d instanceof Date?d:new Date(d);if(!isNaN(dt))mes=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;}
+    return {...r,_num:exNum(r.PEDIDO||r['PEDIDO']),_mes:mes};
+  });
+}
+function procSementes(rows){
+  S.semIds=new Set();
+  S.semValor={}; // num pedido -> valor total do produto
+  S.semFilial=null; // sigla da filial vinda do arquivo (fonte confiável)
+  rows.forEach(r=>{
+    const v=r['N° Pedido']||r['N Pedido']||r['No Pedido']||'';
+    const n=parseFloat(String(v));
+    const num=isNaN(n)?String(v).trim():String(Math.round(n));
+    S.semIds.add(num);
+    // Somar valor do produto (Vlr. Prod.) por pedido
+    const vlr=parseFloat(String(r['Vlr. Prod.']||r['Vlr Prod']||0).replace(',','.'))||0;
+    S.semValor[num]=(S.semValor[num]||0)+vlr;
+    // Capturar a sigla da filial (coluna "Filial" do arquivo de sementes)
+    if(!S.semFilial){
+      const fil=String(r['Filial']||r['FILIAL']||'').trim().toUpperCase();
+      if(fil && MSIGLA[fil]) S.semFilial=fil;
+    }
+  });
+}
+function procCopia(rows){
+  S.copiaIds=new Set(rows.map(r=>exNum(r.PEDIDO||r['PEDIDO'])));
+}
+
+// ============================================================
+// AGREGAÇÕES
+// ============================================================
+function agPedidosVend(){
+  const map={};
+  let dtMin=null,dtMax=null;
+  const pedidos=agruparPedidos();
+  pedidos.forEach(p=>{
+    if(p.status==='IGNORADO'||p.status==='NA') {
+      // Contabiliza período + guarda no naoContab do vendedor para exibição visual
+      const d=p.repr['DT EMISSAO NF']||p.repr['DT EMISSAO NF '];
+      if(d){const dt=d instanceof Date?d:new Date(d);if(!isNaN(dt)){if(!dtMin||dt<dtMin)dtMin=dt;if(!dtMax||dt>dtMax)dtMax=dt;}}
+      if(p.status==='NA'&&p.naMotivo){
+        // Guardar para mostrar visualmente no detalhe do vendedor
+        const r=p.repr;
+        const vend=String(r.VENDEDOR||r['VENDEDOR']||'').trim();
+        if(!map[vend]) map[vend]={vend,ass:0,pend:0,semPend:0,dets:[],naoContab:[]};
+        map[vend].naoContab.push({ped:p.num,tipo:String(r['TIPO PEDIDO']||'').trim(),nf:String(r['NT FISCAL']||r['NT_FISCAL']||'').trim(),cfop:exCfop(r.CFOP||''),motivo:p.naMotivo});
+      }
+      return;
+    }
+    const r=p.repr;
+    const isSem=p.isSem;
+    const vend=String(r.VENDEDOR||r['VENDEDOR']||'').trim();
+    if(!map[vend]) map[vend]={vend,ass:0,pend:0,semPend:0,dets:[],naoContab:[]};
+    if(p.status==='ASSINADO') map[vend].ass++;
+    else{
+      map[vend].pend++;
+      if(isSem) map[vend].semPend++;
+      map[vend].dets.push({ped:p.num,tipo:String(r['TIPO PEDIDO']||'').trim(),nf:String(r['NT FISCAL']||r['NT_FISCAL']||'').trim(),cfop:exCfop(r.CFOP||''),sem:isSem});
+    }
+    const d=r['DT EMISSAO NF']||r['DT EMISSAO NF '];
+    if(d){const dt=d instanceof Date?d:new Date(d);if(!isNaN(dt)){if(!dtMin||dt<dtMin)dtMin=dt;if(!dtMax||dt>dtMax)dtMax=dt;}}
+  });
+  const fmt=d=>`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  S.periodo=dtMin?`${fmt(dtMin)} a ${fmt(dtMax)}`:'';
+  return Object.values(map);
+}
+function agSementesVend(){
+  const map={};
+  const pedidos=agruparPedidos();
+  pedidos.forEach(p=>{
+    if(!p.isSem) return;
+    if(p.status==='IGNORADO'||p.status==='NA') return;
+    const r=p.repr;
+    const vend=String(r.VENDEDOR||r['VENDEDOR']||'').trim();
+    if(!map[vend]) map[vend]={vend,ass:0,pend:0,dets:[]};
+    if(p.status==='ASSINADO') map[vend].ass++;
+    else{map[vend].pend++;map[vend].dets.push({ped:p.num,tipo:String(r['TIPO PEDIDO']||'').trim(),nf:String(r['NT FISCAL']||'').trim(),cfop:exCfop(r.CFOP||'')});}
+  });
+  return Object.values(map);
+}
+function agCanMes(){
+  const map={};
+  S.canhoto.forEach(r=>{
+    if(ehEscritorio(r.VENDEDOR||r['VENDEDOR'])) return; // escritórios não contam
+    const st=stNota(r);
+    const mes=r._mes||'Desconhecido';
+    if(!map[mes]) map[mes]={mes,ass:0,pend:0,dets:[]};
+    if(st==='ASSINADO') map[mes].ass++;
+    else{map[mes].pend++;map[mes].dets.push({ped:r._num,tipo:String(r['TIPO PEDIDO']||'').trim(),nf:String(r['NT FISCAL']||'').trim(),cfop:exCfop(r.CFOP||'')});}
+  });
+  return Object.values(map).sort((a,b)=>a.mes.localeCompare(b.mes));
+}
+function agCanVend(){
+  const map={};
+  S.canhoto.forEach(r=>{
+    if(ehEscritorio(r.VENDEDOR||r['VENDEDOR'])) return; // escritórios não contam
+    const st=stNota(r);
+    const vend=String(r.VENDEDOR||r['VENDEDOR']||'').trim();
+    if(!map[vend]) map[vend]={vend,ass:0,pend:0,dets:[]};
+    if(st==='ASSINADO') map[vend].ass++;
+    else{map[vend].pend++;map[vend].dets.push({ped:r._num,tipo:String(r['TIPO PEDIDO']||'').trim(),nf:String(r['NT FISCAL']||'').trim(),cfop:exCfop(r.CFOP||'')});}
+  });
+  return Object.values(map);
+}
+
+// ============================================================
+// HELPERS RENDER
+// ============================================================
+function pct(a,t){return t>0?Math.round(a/t*10000)/100:0;}
+function fp(v){return v.toFixed(2)+'%';}
+function corP(v){return v>=80?'g':v>=60?'a':'r';}
+function corPCss(v){return v>=80?'verde':v>=60?'amar':'verm';}
+function corPInvCss(v){return v<=20?'verde':v<=40?'amar':'verm';}
+function corPInv(v){return v<=20?'g':v<=40?'a':'r';}
+function mesNome(ym){
+  const ms=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const p=ym.split('-');return p.length===2?`${ms[parseInt(p[1])-1]}/${p[0]}`:ym;
+}
+function detHTML(dets,cols,naoContab){
+  let html='';
+  // Seção de pendentes reais
+  if(!dets||!dets.length){
+    html+='<span style="color:var(--text3);font-size:12px">Nenhum pendente</span>';
+  }else{
+    html+=`<table class="det-table"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+    html+=dets.map(d=>{
+      let cells='';
+      if('ped' in d) cells+=`<td>${d.ped}</td>`;
+      if('tipo' in d) cells+=`<td>${d.tipo}</td>`;
+      if('nf' in d) cells+=`<td>${d.nf}</td>`;
+      if('cfop' in d) cells+=`<td>${d.cfop}</td>`;
+      if('sem' in d) cells+=`<td>${d.sem?'<span class="tag-sem">🌱 Sim</span>':'—'}</td>`;
+      return `<tr>${cells}</tr>`;
+    }).join('')+'</tbody></table>';
+  }
+  // Seção de não contabilizados (VENDA A VISTA etc.) — visual informativo
+  if(naoContab&&naoContab.length){
+    html+=`<div class="det-na-tit">Não contabilizados na %</div>`;
+    html+=`<table class="det-table"><thead><tr>
+      <th>Nº Pedido</th><th>Tipo</th><th>NT Fiscal</th><th>CFOP</th><th></th>
+    </tr></thead><tbody>`;
+    html+=naoContab.map(d=>`<tr class="tr-na">
+      <td>${d.ped}</td><td>${d.tipo}</td><td>${d.nf}</td><td>${d.cfop}</td>
+      <td><span class="badge-na" title="${d.motivo}">Não conta</span></td>
+    </tr>`).join('');
+    html+='</tbody></table>';
+  }
+  return html;
+}
+
+// ============================================================
+// RENDER TABELA GENÉRICA (com botão detalhar separado)
+// ============================================================
+let _detStore={};
+function renderTabela(tbodyId,dados,tipo,cols,rowFn,totFn,cxId,detColsLabels){
+  _detStore[tbodyId]=dados;
+  const tbody=document.getElementById(tbodyId);
+  let html='';
+  dados.forEach((v,i)=>{
+    const rowId=`det-${tbodyId}-${i}`;
+    html+=rowFn(v,i,rowId);
+    html+=`<tr id="${rowId}" class="tr-det hidden"><td colspan="${cols}"><div class="det-inner">
+      <div class="det-tit">Pendentes de ${v.vend!==undefined?nomeLimpo(v.vend):(mesNome(v.mes||''))}</div>
+      ${detHTML(v.dets,detColsLabels,v.naoContab)}
+    </div></td></tr>`;
+  });
+  html+=totFn(dados);
+  tbody.innerHTML=html;
+  if(cxId) document.getElementById(cxId).innerHTML=caixasHTML(dados,tipo);
+}
+
+function caixasHTML(dados,tipo){
+  let tC=0,tA=0,tP=0;
+  dados.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;});
+  const pA=pct(tA,tC),pP=pct(tP,tC);
+  return `<div class="caixa"><div class="caixa-l">% Validados</div><div class="caixa-v">${fp(pA)}</div></div>
+  <div class="caixa"><div class="caixa-l">% Inconsistente</div><div class="caixa-v">${fp(pP)}</div></div>
+  <div class="caixa"><div class="caixa-l">Total Conferidos</div><div class="caixa-v">${tC}</div></div>
+  <div class="caixa"><div class="caixa-l">Total Assinados</div><div class="caixa-v">${tA}</div></div>
+  <div class="caixa"><div class="caixa-l">Total Pendentes</div><div class="caixa-v">${tP}</div></div>`;
+}
+
+function toggleDet(rowId){
+  const r=document.getElementById(rowId);
+  if(!r) return;
+  const vis=!r.classList.contains('hidden');
+  r.classList.toggle('hidden',vis);
+  const btn=r.previousElementSibling?.querySelector('.btn-det');
+  if(btn) btn.textContent=vis?'▶ Detalhar':'▼ Recolher';
+}
+function expandirTodos(tblId){
+  document.querySelectorAll(`#${tblId} .tr-det`).forEach(r=>{
+    r.classList.remove('hidden');
+    const btn=r.previousElementSibling?.querySelector('.btn-det');
+    if(btn) btn.textContent='▼ Recolher';
+  });
+}
+function recolherTodos(tblId){
+  document.querySelectorAll(`#${tblId} .tr-det`).forEach(r=>{
+    r.classList.add('hidden');
+    const btn=r.previousElementSibling?.querySelector('.btn-det');
+    if(btn) btn.textContent='▶ Detalhar';
+  });
+}
+
+// ============================================================
+// RENDER TUDO
+// ============================================================
+function renderTudo(){
+  document.getElementById('tela-import').classList.add('hidden');
+  document.getElementById('painel').classList.remove('hidden');
+
+  const pedVend=agPedidosVend();
+  const semVend=agSementesVend();
+  const canMes=agCanMes();
+  const canVend=agCanVend();
+
+  // Detectar filial — prioridade:
+  // 1) Sigla vinda do arquivo de SEMENTES (coluna "Filial" — fonte confiável)
+  // 2) Seleção manual do usuário (seletor no topo)
+  // 3) Fallback CRI
+  let siglaDetectada=S.filialManual||S.semFilial||null;
+  if(!siglaDetectada){
+    siglaDetectada='CRI';
+    S.filialIncerta=true; // sinaliza para destacar o seletor de filial
+  }else{
+    S.filialIncerta=false;
+  }
+  S.fi=MSIGLA[siglaDetectada]||BASE.find(b=>b.sigla===siglaDetectada)||BASE[6];
+
+  // Totais
+  let tPC=0,tPA=0,tPP=0,tSP=0;
+  pedVend.forEach(v=>{tPC+=v.ass+v.pend;tPA+=v.ass;tPP+=v.pend;tSP+=v.semPend;});
+  let tCC=0,tCA=0,tCP=0;
+  canMes.forEach(v=>{tCC+=v.ass+v.pend;tCA+=v.ass;tCP+=v.pend;});
+  let tSC=0,tSA=0,tSPend=0;
+  semVend.forEach(v=>{tSC+=v.ass+v.pend;tSA+=v.ass;tSPend+=v.pend;});
+
+  // Novas análises
+  const tendMes=agTendenciaMes();
+  const clientes=agClientesPendentes();
+  const risco=agRiscoSementes();
+  const plano=agPlanoAcao(pedVend);
+  const narr=gerarNarrativa(tPC,tPA,tPP,tSP,tCC,tCA,tCP,tendMes,plano,risco);
+
+  renderInfoFilial();
+  renderKPIs(tPC,tPA,tPP,tSP,tCC,tCA,tCP);
+  renderRankings(pedVend,canMes);
+  renderPedidos(pedVend,tPC,tPA,tPP,tSP);
+  renderSementes(semVend,tSC,tSA,tSPend);
+  renderCanMes(canMes,tCC,tCA,tCP);
+  renderCanVend(canVend,tCC,tCA,tCP);
+  renderDiagnostico(narr,tendMes,pedVend,clientes,risco,plano);
+  renderApres(tPC,tPA,tPP,tSP,semVend,tCC,tCA,tCP,canMes,narr);
+
+  document.getElementById('topo-titulo').textContent='CONFERÊNCIA — '+(S.fi?.loja||'');
+  document.getElementById('topo-sub').textContent=S.periodo?'Período: '+S.periodo:'';
+}
+
+// ============================================================
+// NOVAS AGREGAÇÕES (Diagnóstico)
+// ============================================================
+function agTendenciaMes(){
+  // % assinados de pedidos conferíveis por mês (pedidos agrupados, não linhas)
+  const map={};
+  agruparPedidos().forEach(p=>{
+    if(p.status!=='ASSINADO'&&p.status!=='PENDENTE') return;
+    const r=p.repr;
+    const d=r['DT EMISSAO NF']||r['DT EMISSAO NF '];
+    if(!d) return;
+    const dt=d instanceof Date?d:new Date(d);
+    if(isNaN(dt)) return;
+    const mes=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+    if(!map[mes]) map[mes]={mes,ass:0,pend:0};
+    if(p.status==='ASSINADO') map[mes].ass++; else map[mes].pend++;
+  });
+  return Object.values(map).sort((a,b)=>a.mes.localeCompare(b.mes))
+    .map(m=>({...m,total:m.ass+m.pend,pct:pct(m.ass,m.ass+m.pend)}));
+}
+function agClientesPendentes(){
+  const map={};
+  agruparPedidos().forEach(p=>{
+    if(p.status!=='PENDENTE') return;
+    const r=p.repr;
+    const cli=String(r['CLIENTE  ']||r['CLIENTE']||'').trim();
+    if(!cli) return;
+    map[cli]=(map[cli]||0)+1;
+  });
+  return Object.entries(map).map(([cli,n])=>({cli,n}))
+    .sort((a,b)=>b.n-a.n).slice(0,15);
+}
+function agRiscoSementes(){
+  // Pedidos semente pendentes + valor em R$ (agrupados)
+  const itens=[];
+  agruparPedidos().forEach(p=>{
+    if(!p.isSem) return;
+    if(p.status!=='PENDENTE') return;
+    const r=p.repr;
+    itens.push({
+      ped:p.num,
+      tipo:String(r['TIPO PEDIDO']||'').trim(),
+      vend:nomeLimpo(String(r.VENDEDOR||r['VENDEDOR']||'')),
+      valor:(Number(S.semValor[p.num])||0)
+    });
+  });
+  const total=itens.reduce((s,i)=>s+(Number(i.valor)||0),0);
+  return {itens,total};
+}
+function agPlanoAcao(pedVend){
+  // Priorizar: semente pendente primeiro, depois qtd pendências, depois % baixo
+  return [...pedVend].map(v=>{
+    const t=v.ass+v.pend; const p=pct(v.ass,t);
+    let acao,nivel;
+    if(v.semPend>0){acao='URGENTE — cobrar semente pendente imediatamente';nivel='urg';}
+    else if(p<60){acao='Crítico — vendedor abaixo de 60%';nivel='urg';}
+    else if(p<80){acao='Atenção — abaixo da meta de 80%';nivel='aten';}
+    else{acao='Adequado — manter acompanhamento';nivel='ok';}
+    return {vend:nomeLimpo(v.vend),total:t,ass:v.ass,pend:v.pend,semPend:v.semPend,pct:p,acao,nivel};
+  }).sort((a,b)=>{
+    if(b.semPend!==a.semPend) return b.semPend-a.semPend;
+    if(b.pend!==a.pend) return b.pend-a.pend;
+    return a.pct-b.pct;
+  });
+}
+function gerarNarrativa(tPC,tPA,tPP,tSP,tCC,tCA,tCP,tendMes,plano,risco){
+  const pPed=pct(tPA,tPC), pCan=pct(tCA,tCC);
+  // Tendência: comparar primeiro e último mês
+  let tendTxt='';
+  if(tendMes.length>=2){
+    const ini=tendMes[0], fim=tendMes[tendMes.length-1];
+    const delta=fim.pct-ini.pct;
+    if(delta<-5) tendTxt=`A assinatura de pedidos <span class="nv-pend">caiu de ${ini.pct.toFixed(1)}% para ${fim.pct.toFixed(1)}%</span> entre ${mesNome(ini.mes)} e ${mesNome(fim.mes)} — tendência de piora que exige atenção.`;
+    else if(delta>5) tendTxt=`A assinatura de pedidos <span class="nv-ok">subiu de ${ini.pct.toFixed(1)}% para ${fim.pct.toFixed(1)}%</span> entre ${mesNome(ini.mes)} e ${mesNome(fim.mes)} — tendência positiva.`;
+    else tendTxt=`A assinatura de pedidos manteve-se estável (${ini.pct.toFixed(1)}% → ${fim.pct.toFixed(1)}%) no período.`;
+  }
+  // Pior vendedor
+  const pior=plano.find(p=>p.nivel==='urg')||plano[0];
+  const piorTxt=pior?`O ponto de maior atenção é <b>${pior.vend}</b> (${pior.pct.toFixed(1)}% assinados, ${pior.pend} pendentes${pior.semPend>0?`, <span class="nv-pend">${pior.semPend} semente pendente</span>`:''}).`:'';
+  // Risco
+  const riscoTxt=risco.total>0?`Há <span class="nv-pend">R$ ${risco.total.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})} em sementes pendentes</span> — risco direto que deve ser zerado.`:`<span class="nv-ok">Nenhuma semente pendente</span> — situação ideal nesse ponto crítico.`;
+
+  return {
+    pPed,pCan,
+    html:`<h4>Diagnóstico Automático — ${S.fi?.loja||''}</h4>
+      A filial fechou o período com <b>${pPed.toFixed(1)}%</b> de pedidos assinados e <b>${pCan.toFixed(1)}%</b> de canhotos assinados, totalizando <span class="nv-pend">${tPP} pedidos</span> e <span class="nv-pend">${tCP} canhotos</span> pendentes. ${tendTxt} ${piorTxt} ${riscoTxt}`
+  };
+}
+
+function renderInfoFilial(){
+  const fi=S.fi||{};
+  // Seletor de filial — permite ao usuário corrigir caso a detecção esteja errada
+  const opts=BASE.slice().sort((a,b)=>a.loja.localeCompare(b.loja))
+    .map(b=>`<option value="${b.sigla}" ${b.sigla===fi.sigla?'selected':''}>${b.loja} (${b.sigla})</option>`).join('');
+  const aviso=S.filialIncerta?`<span title="Filial assumida por padrão. Confira e ajuste se necessário." style="color:var(--amber-dk);font-size:11px;margin-left:6px">⚠ confira</span>`:'';
+  document.getElementById('info-filial').innerHTML=`
+    <div class="if-item"><div class="if-label">Filial ${aviso}</div>
+      <select id="sel-filial" onchange="trocarFilial(this.value)" 
+        style="background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:3px 8px;font-size:13px;font-weight:700;cursor:pointer;">
+        ${opts}
+      </select>
+    </div>
+    <div class="if-item"><div class="if-label">Estado</div><div class="if-val">${fi.estado||'—'}</div></div>
+    <div class="if-item"><div class="if-label">Gerente</div><div class="if-val">${fi.gerente||'—'}</div></div>
+    <div class="if-item"><div class="if-label">Supervisor</div><div class="if-val">${fi.supervisor||'—'}</div></div>
+    <div class="if-item"><div class="if-label">Regional</div><div class="if-val">${fi.regional||'—'}</div></div>
+    <div class="if-item"><div class="if-label">Auditor</div><div class="if-val">${fi.auditor||'—'}</div></div>
+    <div class="if-item"><div class="if-label">Período</div><div class="if-val">${S.periodo||'—'}</div></div>`;
+}
+function trocarFilial(sigla){
+  S.filialManual=sigla;
+  renderTudo();
+  mudarAba(0);
+}
+
+function renderKPIs(tPC,tPA,tPP,tSP,tCC,tCA,tCP){
+  const pP=pct(tPA,tPC),pC=pct(tCA,tCC);
+  const cP=corP(pP),cC=corP(pC),cPcss=corPCss(pP),cCcss=corPCss(pC);
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi ${cP}">
+      <div class="kpi-label">Pedidos Assinados</div>
+      <div class="kpi-val">${fp(pP)}</div>
+      <div class="kpi-sub">${tPA} de ${tPC} conferíveis</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(pP,100)}%;background:var(--${cPcss})"></div></div>
+    </div>
+    <div class="kpi ${cC}">
+      <div class="kpi-label">Canhotos Assinados</div>
+      <div class="kpi-val">${fp(pC)}</div>
+      <div class="kpi-sub">${tCA} de ${tCC} conferíveis</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(pC,100)}%;background:var(--${cCcss})"></div></div>
+    </div>
+    <div class="kpi r">
+      <div class="kpi-label">Pedidos Pendentes</div>
+      <div class="kpi-val">${tPP}</div>
+      <div class="kpi-sub">sem assinatura de pedido</div>
+    </div>
+    <div class="kpi r">
+      <div class="kpi-label">Canhotos Pendentes</div>
+      <div class="kpi-val">${tCP}</div>
+      <div class="kpi-sub">notas sem assinatura</div>
+    </div>
+    <div class="kpi ${tSP>0?'r':'g'}">
+      <div class="kpi-label">Sementes Pendentes</div>
+      <div class="kpi-val">${tSP}</div>
+      <div class="kpi-sub">${tSP===0?'✔ Nenhuma pendência':'⚠ Zero tolerância'}</div>
+    </div>`;
+}
+
+function renderRankings(pedVend,canMes){
+  // Ranking pedidos — ordenado por % asc (piores primeiro)
+  const pv=[...pedVend].map(v=>({nome:nomeLimpo(v.vend),ass:v.ass,pend:v.pend,t:v.ass+v.pend,p:pct(v.ass,v.ass+v.pend)}))
+    .sort((a,b)=>a.p-b.p);
+  const maxPT=Math.max(...pv.map(v=>v.t),1);
+  let rH=`<div class="ranking-header"><span>Vendedor</span><span>% Assinados</span></div>`;
+  pv.forEach((v,i)=>{
+    const c=corP(v.p);const cCss=corPCss(v.p);
+    const pos=i===0&&v.p<80?'bot':i===pv.length-1&&v.p>=80?'top':'';
+    rH+=`<div class="ranking-row${v.p<60?' pior':''}">
+      <div class="ranking-pos ${pos||'azul'}" style="${!pos?'background:var(--az5);color:var(--az2)':''}">${i+1}</div>
+      <div class="ranking-nome">${v.nome}<br><span style="font-size:11px;color:var(--c3)">${v.ass}✔ / ${v.pend}✗ (${v.t})</span></div>
+      <div class="ranking-bar-wrap"><div class="ranking-bar-fill" style="width:${v.p}%;background:var(--${cCss})"></div></div>
+      <div class="ranking-pct" style="color:var(--${cCss})">${fp(v.p)}</div>
+    </div>`;
+  });
+  document.getElementById('rank-pedidos').innerHTML=rH;
+
+  // Ranking canhotos por mês
+  let cH=`<div class="ranking-header"><span>Mês</span><span>% Pendente</span></div>`;
+  canMes.forEach(v=>{
+    const t=v.ass+v.pend; const pInc=pct(v.pend,t); const c=corPInv(pInc); const cCss=corPInvCss(pInc);
+    cH+=`<div class="ranking-row">
+      <div class="ranking-pos" style="background:var(--brand-lt);color:var(--brand-dk);width:28px;height:28px;border-radius:4px;font-size:10px">📅</div>
+      <div class="ranking-nome">${mesNome(v.mes)}<br><span style="font-size:11px;color:var(--c3)">${v.ass}✔ / ${v.pend}✗ (${t})</span></div>
+      <div class="ranking-bar-wrap"><div class="ranking-bar-fill" style="width:${pInc}%;background:var(--${cCss})"></div></div>
+      <div class="ranking-pct" style="color:var(--${cCss})">${fp(pInc)}</div>
+    </div>`;
+  });
+  document.getElementById('rank-canhotos').innerHTML=cH;
+}
+
+// ============================================================
+// TABELAS DETALHADAS
+// ============================================================
+function renderPedidos(dados,tC,tA,tP,tSP){
+  // Alerta sementes
+  const al=document.getElementById('alerta-ped');
+  if(tSP>0){al.className='alerta-box verm';al.innerHTML=`<span class="alerta-icon">⚠️</span>${tSP} pedido(s) de SEMENTES pendente(s) — zero tolerância.`;al.classList.remove('hidden');}
+  else{al.className='alerta-box verde';al.innerHTML=`<span class="alerta-icon">✔</span>Nenhum pedido semente pendente.`;al.classList.remove('hidden');}
+
+  const sorted=[...dados].sort((a,b)=>pct(a.ass,a.ass+a.pend)-pct(b.ass,b.ass+b.pend));
+  renderTabela('body-ped',sorted,'ped',8,
+    (v,i,rid)=>{
+      const t=v.ass+v.pend; const p=pct(v.ass,t); const c=corP(p);
+      return `<tr>
+        <td><button class="btn-det" onclick="toggleDet('${rid}')">▶ Detalhar</button></td>
+        <td>${nomeLimpo(v.vend)}</td>
+        <td>${t}</td><td>${v.ass}</td>
+        <td>${v.pend}${v.semPend>0?`<span class="tag-sem">🌱 ${v.semPend}</span>`:''}</td>
+        <td><span class="badge b${c[0]}">${fp(p)}</span></td>
+        <td>${v.semPend>0?`<span class="badge br">${v.semPend}</span>`:'<span class="badge bg">0</span>'}</td>
+        <td style="font-size:11px;color:var(--c3)">${S.periodo}</td>
+      </tr>`;
+    },
+    (dados)=>{const tT=dados.reduce((s,v)=>s+v.ass+v.pend,0);const tA=dados.reduce((s,v)=>s+v.ass,0);const tP=dados.reduce((s,v)=>s+v.pend,0);
+      return `<tr class="tr-tot"><td></td><td>TOTAL</td><td>${tT}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tA,tT))}</td><td></td><td></td></tr>`;},
+    'cxs-ped',['Nº Pedido','Tipo','NT Fiscal','CFOP','Semente']
+  );
+}
+
+function renderSementes(dados,tC,tA,tP){
+  const al=document.getElementById('alerta-sem');
+  if(tP>0){al.className='alerta-box verm';al.innerHTML=`<span class="alerta-icon">⚠️</span>${tP} pedido(s) de semente PENDENTE(s) — esta filial não pode ter nenhum.`;al.classList.remove('hidden');}
+  else{al.className='alerta-box verde';al.innerHTML=`<span class="alerta-icon">✔</span>Nenhum pedido semente pendente.`;al.classList.remove('hidden');}
+
+  const sorted=[...dados].sort((a,b)=>b.pend-a.pend);
+  renderTabela('body-sem',sorted,'sem',7,
+    (v,i,rid)=>{
+      const t=v.ass+v.pend; const p=pct(v.ass,t); const c=corP(p);
+      return `<tr>
+        <td><button class="btn-det" onclick="toggleDet('${rid}')">▶ Detalhar</button></td>
+        <td>${nomeLimpo(v.vend)}</td><td>${t}</td><td>${v.ass}</td><td>${v.pend}</td>
+        <td><span class="badge b${c[0]}">${fp(p)}</span></td>
+        <td style="font-size:11px;color:var(--c3)">${S.periodo}</td>
+      </tr>`;
+    },
+    (dados)=>{const tT=dados.reduce((s,v)=>s+v.ass+v.pend,0);const tA=dados.reduce((s,v)=>s+v.ass,0);const tP=dados.reduce((s,v)=>s+v.pend,0);
+      return `<tr class="tr-tot"><td></td><td>TOTAL</td><td>${tT}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tA,tT))}</td><td></td></tr>`;},
+    'cxs-sem',['Nº Pedido','Tipo','NT Fiscal','CFOP']
+  );
+}
+
+function renderCanMes(dados,tC,tA,tP){
+  renderTabela('body-cm',dados,'cm',6,
+    (v,i,rid)=>{
+      const t=v.ass+v.pend; const pInc=pct(v.pend,t); const c=corPInv(pInc); const cCss=corPInvCss(pInc);
+      return `<tr>
+        <td><button class="btn-det" onclick="toggleDet('${rid}')">▶ Detalhar</button></td>
+        <td>${mesNome(v.mes)}</td><td>${t}</td><td>${v.ass}</td><td>${v.pend}</td>
+        <td><span class="badge b${c[0]}">${fp(pInc)}</span></td>
+      </tr>`;
+    },
+    (dados)=>{const tT=dados.reduce((s,v)=>s+v.ass+v.pend,0);const tA=dados.reduce((s,v)=>s+v.ass,0);const tP=dados.reduce((s,v)=>s+v.pend,0);
+      return `<tr class="tr-tot"><td></td><td>TOTAL</td><td>${tT}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tP,tT))}</td></tr>`;},
+    'cxs-cm',['Nº Pedido','Tipo','NT Fiscal','CFOP']
+  );
+}
+
+function renderCanVend(dados,tC,tA,tP){
+  const sorted=[...dados].sort((a,b)=>b.pend-a.pend);
+  renderTabela('body-cv',sorted,'cv',6,
+    (v,i,rid)=>{
+      const t=v.ass+v.pend; const pInc=pct(v.pend,t); const c=corPInv(pInc); const cCss=corPInvCss(pInc);
+      return `<tr>
+        <td><button class="btn-det" onclick="toggleDet('${rid}')">▶ Detalhar</button></td>
+        <td>${nomeLimpo(v.vend)}</td><td>${t}</td><td>${v.ass}</td><td>${v.pend}</td>
+        <td><span class="badge b${c[0]}">${fp(pInc)}</span></td>
+      </tr>`;
+    },
+    (dados)=>{const tT=dados.reduce((s,v)=>s+v.ass+v.pend,0);const tA=dados.reduce((s,v)=>s+v.ass,0);const tP=dados.reduce((s,v)=>s+v.pend,0);
+      return `<tr class="tr-tot"><td></td><td>TOTAL</td><td>${tT}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tP,tT))}</td></tr>`;},
+    'cxs-cv',['Nº Pedido','Tipo','NT Fiscal','CFOP']
+  );
+}
+
+// ============================================================
+// APRESENTAÇÃO
+// ============================================================
+// ============================================================
+// RENDER DIAGNÓSTICO & AÇÃO
+// ============================================================
+function renderDiagnostico(narr,tendMes,pedVend,clientes,risco,plano){
+  // Narrativa
+  document.getElementById('narrativa').innerHTML=narr.html;
+
+  // Gráfico tendência (linha)
+  desenharGraficoTendencia(tendMes);
+  // Gráfico vendedores (barra)
+  desenharGraficoVendedores(pedVend);
+
+  // Risco financeiro
+  const rb=document.getElementById('risco-box');
+  if(risco.total>0){
+    rb.innerHTML=`<div class="risco-card">
+      <div class="risco-val">R$ ${risco.total.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+      <div class="risco-desc">
+        <b>${risco.itens.length} pedido(s) de semente pendente(s)</b> representando este valor em produto.
+        Esta filial não pode ter nenhuma semente pendente — ação imediata necessária.
+        <div class="risco-lista">${risco.itens.map(i=>`<div>• Pedido <b>${i.ped}</b> — ${i.vend} — ${i.tipo} — <b>R$ ${i.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</b></div>`).join('')}</div>
+      </div>
+    </div>`;
+  }else{
+    rb.innerHTML=`<div class="risco-card zero">
+      <div class="risco-val">R$ 0,00</div>
+      <div class="risco-desc"><b>Nenhuma semente pendente.</b> Situação ideal neste ponto crítico de auditoria.</div>
+    </div>`;
+  }
+
+  // Clientes
+  document.getElementById('body-clientes').innerHTML=clientes.length
+    ? clientes.map(c=>`<tr><td>${c.cli}</td><td><span class="badge br">${c.n}</span></td></tr>`).join('')
+    : '<tr><td colspan="2" class="empty">Nenhuma pendência de pedido</td></tr>';
+
+  // Plano de ação
+  document.getElementById('body-plano').innerHTML=plano.map((p,i)=>{
+    const acaoClass=p.nivel==='urg'?'acao-urg':p.nivel==='aten'?'acao-aten':'acao-ok';
+    const priorClass=p.nivel==='ok'?'prior-num baixa':'prior-num';
+    return `<tr>
+      <td><span class="${priorClass}">${i+1}</span></td>
+      <td>${p.vend}</td>
+      <td><span class="badge b${corP(p.pct)}">${fp(p.pct)}</span></td>
+      <td>${p.pend}</td>
+      <td>${p.semPend>0?`<span class="badge br">${p.semPend}</span>`:'<span class="badge bg">0</span>'}</td>
+      <td><span class="acao ${acaoClass}">${p.acao}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function desenharGraficoTendencia(tendMes){
+  const ctx=document.getElementById('chart-tend');
+  if(!ctx) return;
+  if(_charts.tend) _charts.tend.destroy();
+  _charts.tend=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:tendMes.map(m=>mesNome(m.mes)),
+      datasets:[{
+        label:'% Assinados',
+        data:tendMes.map(m=>m.pct),
+        borderColor:'#2b7fd4',
+        backgroundColor:'rgba(43,127,212,.15)',
+        borderWidth:2.5,fill:true,tension:.3,
+        pointBackgroundColor:'#4d96e0',pointRadius:5,pointHoverRadius:7
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      scales:{
+        y:{min:0,max:100,ticks:{color:'#8ba2c2',callback:v=>v+'%'},grid:{color:'#1a2c47'}},
+        x:{ticks:{color:'#8ba2c2'},grid:{color:'#1a2c47'}}
+      },
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(1)+'% assinados'}}}
+    }
+  });
+}
+
+function desenharGraficoVendedores(pedVend){
+  const ctx=document.getElementById('chart-vend');
+  if(!ctx) return;
+  if(_charts.vend) _charts.vend.destroy();
+  const dados=[...pedVend].map(v=>({nome:nomeLimpo(v.vend),pct:pct(v.ass,v.ass+v.pend)}))
+    .sort((a,b)=>a.pct-b.pct);
+  _charts.vend=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:dados.map(d=>d.nome),
+      datasets:[{
+        label:'% Assinados',
+        data:dados.map(d=>d.pct),
+        backgroundColor:dados.map(d=>d.pct>=80?'#35b87a':d.pct>=60?'#e0a73a':'#e25c4d'),
+        borderRadius:4
+      }]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:true,
+      scales:{
+        x:{min:0,max:100,ticks:{color:'#8ba2c2',callback:v=>v+'%'},grid:{color:'#1a2c47'}},
+        y:{ticks:{color:'#8ba2c2',font:{size:11}},grid:{display:false}}
+      },
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(1)+'% assinados'}}}
+    }
+  });
+}
+
+function renderApres(tPC,tPA,tPP,tSP,semVend,tCC,tCA,tCP,canMes,narr){
+  const fi=S.fi||{};
+  document.getElementById('ap-filial').textContent=fi.loja||'—';
+  document.getElementById('ap-periodo').textContent='Período de auditoria: '+(S.periodo||'—');
+  document.getElementById('ap-resp').innerHTML=`
+    <div class="ar-item"><div class="ar-l">Gerente</div><div class="ar-v">${fi.gerente||'—'}</div></div>
+    <div class="ar-item"><div class="ar-l">Supervisor</div><div class="ar-v">${fi.supervisor||'—'}</div></div>
+    <div class="ar-item"><div class="ar-l">Regional</div><div class="ar-v">${fi.regional||'—'}</div></div>
+    <div class="ar-item"><div class="ar-l">Auditor</div><div class="ar-v">${fi.auditor||'—'}</div></div>`;
+  // Narrativa na apresentação também
+  if(narr) document.getElementById('ap-narrativa').innerHTML=narr.html;
+  const pPed=pct(tPA,tPC),pCan=pct(tCA,tCC);
+  document.getElementById('ap-blocos').innerHTML=`
+    <div class="apres-bloco">
+      <div class="apb-titulo">📋 Pedidos de Venda</div>
+      <div class="apb-num ${tPP>0?'verm':'verde'}">${tPP}</div>
+      <div class="apb-sub">pedidos pendentes de assinatura</div>
+      <div class="apb-linha"><span style="color:var(--c3)">Total conferidos</span><span class="apb-lv">${tPC}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">Assinados</span><span class="apb-lv ok">${tPA}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">Pendentes</span><span class="apb-lv pend">${tPP}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">% Assinados</span><span class="apb-lv">${fp(pPed)}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">% Inconsistente</span><span class="apb-lv ${tPP>0?'pend':''}">${fp(pct(tPP,tPC))}</span></div>
+    </div>
+    <div class="apres-bloco">
+      <div class="apb-titulo">🌱 Sementes — ZERO TOLERÂNCIA</div>
+      <div class="apb-num ${tSP>0?'r':'g'}">${tSP}</div>
+      <div class="apb-sub">${tSP===0?'nenhuma pendência de semente':'pedidos semente pendentes'}</div>
+      ${tSP===0?'<div class="apb-alert-g">✔ Sem pendências de semente</div>':
+      '<div class="apb-alert-r">⚠ PENDÊNCIAS CRÍTICAS DE SEMENTE</div>'+
+      semVend.filter(v=>v.pend>0).map(v=>`<div class="apb-linha"><span style="color:var(--c3)">${nomeLimpo(v.vend)}</span><span class="apb-lv pend">${v.pend} pend.</span></div>`).join('')}
+    </div>
+    <div class="apres-bloco">
+      <div class="apb-titulo">📄 Canhotos (Notas Fiscais)</div>
+      <div class="apb-num ${tCP>0?'verm':'verde'}">${tCP}</div>
+      <div class="apb-sub">canhotos pendentes</div>
+      <div class="apb-linha"><span style="color:var(--c3)">Total conferidos</span><span class="apb-lv">${tCC}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">Assinados</span><span class="apb-lv ok">${tCA}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">Pendentes</span><span class="apb-lv pend">${tCP}</span></div>
+      <div class="apb-linha"><span style="color:var(--c3)">% Assinados</span><span class="apb-lv">${fp(pCan)}</span></div>
+      <br/>
+      <div style="font-size:10px;font-weight:800;color:var(--c3);margin-bottom:6px;text-transform:uppercase">Por Mês</div>
+      <table class="apb-tmes"><thead><tr><th>Mês</th><th>Total</th><th>Assinados</th><th>Pendentes</th><th>%Pend</th></tr></thead>
+      <tbody>${canMes.map(m=>{const t=m.ass+m.pend;return`<tr><td>${mesNome(m.mes)}</td><td>${t}</td><td>${m.ass}</td><td style="color:var(--verm);font-weight:700">${m.pend}</td><td>${fp(pct(m.pend,t))}</td></tr>`;}).join('')}</tbody></table>
+    </div>`;
+}
+
+// ============================================================
+// SORT TABELAS
+// ============================================================
+function sortTab(tblId,ci,th){
+  const tbl=document.getElementById(tblId);
+  const tbody=tbl.querySelector('tbody');
+  // IMPORTANTE: usar ':scope > tr' para pegar APENAS as linhas diretas do tbody.
+  // Sem isso, querySelectorAll desce e captura as <tr> das tabelas aninhadas de
+  // detalhe (det-table), que apareciam soltas no meio ao ordenar.
+  const linhasDiretas=[...tbody.querySelectorAll(':scope > tr')];
+  const rows=linhasDiretas.filter(r=>!r.classList.contains('tr-det')&&!r.classList.contains('tr-tot'));
+  const asc=th.classList.contains('asc');
+  tbl.querySelectorAll('thead th').forEach(t=>t.classList.remove('asc','desc'));
+  th.classList.add(asc?'desc':'asc');
+  rows.sort((a,b)=>{
+    const ta=a.cells[ci]?.textContent.trim()||'';
+    const tb=b.cells[ci]?.textContent.trim()||'';
+    const na=parseFloat(ta.replace('%','').replace(',','.'));
+    const nb=parseFloat(tb.replace('%','').replace(',','.'));
+    if(!isNaN(na)&&!isNaN(nb)) return asc?nb-na:na-nb;
+    return asc?tb.localeCompare(ta,'pt'):ta.localeCompare(tb,'pt');
+  });
+  const dets=linhasDiretas.filter(r=>r.classList.contains('tr-det'));
+  const tots=linhasDiretas.filter(r=>r.classList.contains('tr-tot'));
+  dets.forEach(r=>r.remove());tots.forEach(r=>r.remove());
+  // Reanexar na ordem: cada linha de vendedor seguida do seu detalhe (emparelhado por id)
+  tbody.innerHTML='';
+  rows.forEach(r=>{
+    tbody.appendChild(r);
+    const btn=r.querySelector('.btn-det');
+    if(btn){
+      const m=btn.getAttribute('onclick')?.match(/'([^']+)'/);
+      if(m){const d=dets.find(x=>x.id===m[1]);if(d)tbody.appendChild(d);}
+    }
+  });
+  tots.forEach(r=>tbody.appendChild(r));
+  // Após reordenar: garantir que todos os dets ficam recolhidos e btns corretos
+  tbody.querySelectorAll(':scope > tr.tr-det').forEach(r=>{
+    r.classList.add('hidden');
+    const b=r.previousElementSibling?.querySelector('.btn-det');
+    if(b) b.textContent='▶ Detalhar';
+  });
+}
+
+// ============================================================
+// EXPORTAÇÃO
+// ============================================================
+// Exportação LIMPA para conferência do supervisor — não copia o HTML cru.
+// Monta uma planilha organizada: cabeçalho da filial, resumo por vendedor,
+// e a relação de pendências (um pedido por linha, sem duplicação de remessa).
+// Exportação LIMPA para conferência do supervisor — não copia o HTML cru.
+// Aceita o tipo: 'pedidos', 'sementes' ou 'canhotos'.
+function expConferencia(tipo){
+  tipo=tipo||'pedidos';
+  if(!S.pedidos.length && !S.canhoto.length){alert('Importe os arquivos primeiro.');return;}
+  const fi=S.fi||{};
+  const wb=XLSX.utils.book_new();
+  const dt=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+
+  // Cabeçalho comum da filial (reutilizado nas duas abas)
+  const cabecalho=(titulo)=>[
+    [titulo],
+    ['Filial',fi.loja||'—','Estado',fi.estado||'—'],
+    ['Gerente',fi.gerente||'—','Supervisor',fi.supervisor||'—'],
+    ['Regional',fi.regional||'—','Auditor',fi.auditor||'—'],
+    ['Período',S.periodo||'—'],
+    []
+  ];
+
+  if(tipo==='canhotos'){
+    // ===== CONFERÊNCIA DE CANHOTOS =====
+    const cv=agCanVend().sort((a,b)=>{
+      const pa=pct(a.pend,a.ass+a.pend),pb=pct(b.pend,b.ass+b.pend);return pb-pa;
+    });
+    let tC=0,tA=0,tP=0; cv.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;});
+    const cm=agCanMes();
+    // Aba Resumo
+    const r=[...cabecalho('AGROQUIMA — CONFERÊNCIA DE CANHOTOS (NOTAS FISCAIS)')];
+    r.push(['INDICADORES GERAIS']);
+    r.push(['Canhotos conferidos',tC]);
+    r.push(['Assinados',tA]);
+    r.push(['Pendentes',tP]);
+    r.push(['% Assinados',pct(tA,tC).toFixed(2)+'%']);
+    r.push([]);
+    r.push(['POR MÊS']);
+    r.push(['Mês','Conferidos','Assinados','Pendentes','% Pendente']);
+    cm.forEach(m=>{const t=m.ass+m.pend;r.push([mesNome(m.mes),t,m.ass,m.pend,pct(m.pend,t).toFixed(2)+'%']);});
+    r.push([]);
+    r.push(['POR VENDEDOR']);
+    r.push(['Vendedor','Conferidos','Assinados','Pendentes','% Pendente']);
+    cv.forEach(v=>{const t=v.ass+v.pend;r.push([nomeLimpo(v.vend),t,v.ass,v.pend,pct(v.pend,t).toFixed(2)+'%']);});
+    r.push(['TOTAL',tC,tA,tP,pct(tP,tC).toFixed(2)+'%']);
+    const ws1=XLSX.utils.aoa_to_sheet(r);
+    ws1['!cols']=[{wch:32},{wch:12},{wch:12},{wch:12},{wch:13}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Resumo');
+    // Aba Pendências
+    const p=[['CANHOTOS PENDENTES — '+(fi.loja||'')],['Período',S.periodo||'—'],[],['Vendedor','Nº Pedido','Tipo','NT Fiscal','CFOP']];
+    let tem=false;
+    cv.forEach(v=>v.dets.forEach(d=>{tem=true;p.push([nomeLimpo(v.vend),d.ped,d.tipo,d.nf,d.cfop]);}));
+    if(!tem) p.push(['— Nenhuma pendência —']);
+    const ws2=XLSX.utils.aoa_to_sheet(p);
+    ws2['!cols']=[{wch:28},{wch:14},{wch:22},{wch:12},{wch:10}];
+    XLSX.utils.book_append_sheet(wb,ws2,'Pendências');
+    XLSX.writeFile(wb,`Conferencia_Canhotos_${(fi.sigla||'Filial')}_${dt}.xlsx`);
+    return;
+  }
+
+  if(tipo==='sementes'){
+    // ===== CONFERÊNCIA DE SEMENTES =====
+    const sv=agSementesVend().sort((a,b)=>{
+      const pa=pct(a.ass,a.ass+a.pend),pb=pct(b.ass,b.ass+b.pend);return pa-pb;
+    });
+    let tC=0,tA=0,tP=0; sv.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;});
+    const risco=agRiscoSementes();
+    const r=[...cabecalho('AGROQUIMA — CONFERÊNCIA DE SEMENTES (ZERO TOLERÂNCIA)')];
+    r.push(['INDICADORES GERAIS']);
+    r.push(['Pedidos de semente conferidos',tC]);
+    r.push(['Assinados',tA]);
+    r.push(['Pendentes',tP]);
+    r.push(['% Assinados',pct(tA,tC).toFixed(2)+'%']);
+    r.push(['Valor em risco (R$)',risco.total.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})]);
+    r.push([]);
+    r.push(['POR VENDEDOR']);
+    r.push(['Vendedor','Conferidos','Assinados','Pendentes','% Assinados']);
+    sv.forEach(v=>{const t=v.ass+v.pend;r.push([nomeLimpo(v.vend),t,v.ass,v.pend,pct(v.ass,t).toFixed(2)+'%']);});
+    r.push(['TOTAL',tC,tA,tP,pct(tA,tC).toFixed(2)+'%']);
+    const ws1=XLSX.utils.aoa_to_sheet(r);
+    ws1['!cols']=[{wch:32},{wch:14},{wch:12},{wch:12},{wch:13}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Resumo');
+    // Aba Pendências (com valor)
+    const p=[['SEMENTES PENDENTES — '+(fi.loja||'')],['Período',S.periodo||'—'],[],['Vendedor','Nº Pedido','Tipo','NT Fiscal','CFOP','Valor (R$)']];
+    let tem=false;
+    risco.itens.forEach(i=>{tem=true;p.push([i.vend,i.ped,i.tipo,'','',i.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})]);});
+    if(!tem) p.push(['— Nenhuma pendência de semente —']);
+    const ws2=XLSX.utils.aoa_to_sheet(p);
+    ws2['!cols']=[{wch:28},{wch:14},{wch:22},{wch:12},{wch:10},{wch:14}];
+    XLSX.utils.book_append_sheet(wb,ws2,'Pendências');
+    XLSX.writeFile(wb,`Conferencia_Sementes_${(fi.sigla||'Filial')}_${dt}.xlsx`);
+    return;
+  }
+
+  // ===== CONFERÊNCIA DE PEDIDOS (padrão) =====
+  const pv=agPedidosVend().sort((a,b)=>pct(a.ass,a.ass+a.pend)-pct(b.ass,b.ass+b.pend));
+  let tC=0,tA=0,tP=0,tSP=0;
+  pv.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;tSP+=v.semPend;});
+  const resumo=[...cabecalho('AGROQUIMA — CONFERÊNCIA DE PEDIDOS DE VENDA')];
+  resumo.push(['INDICADORES GERAIS']);
+  resumo.push(['Pedidos conferidos',tC]);
+  resumo.push(['Assinados',tA]);
+  resumo.push(['Pendentes',tP]);
+  resumo.push(['% Assinados',pct(tA,tC).toFixed(2)+'%']);
+  resumo.push(['Sementes pendentes',tSP]);
+  resumo.push([]);
+  resumo.push(['DESEMPENHO POR VENDEDOR']);
+  resumo.push(['Vendedor','Conferidos','Assinados','Pendentes','% Assinados','Sem. Pend.']);
+  pv.forEach(v=>{const t=v.ass+v.pend;resumo.push([nomeLimpo(v.vend),t,v.ass,v.pend,pct(v.ass,t).toFixed(2)+'%',v.semPend]);});
+  resumo.push(['TOTAL',tC,tA,tP,pct(tA,tC).toFixed(2)+'%',tSP]);
+  const ws1=XLSX.utils.aoa_to_sheet(resumo);
+  ws1['!cols']=[{wch:32},{wch:12},{wch:12},{wch:12},{wch:13},{wch:11}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Resumo');
+  const pend=[['RELAÇÃO DE PENDÊNCIAS — '+(fi.loja||'')],['Período',S.periodo||'—'],[],['Vendedor','Nº Pedido','Tipo','NT Fiscal','CFOP','Semente?']];
+  let temPend=false;
+  pv.forEach(v=>v.dets.forEach(d=>{temPend=true;pend.push([nomeLimpo(v.vend),d.ped,d.tipo,d.nf,d.cfop,d.sem?'SIM':'']);}));
+  if(!temPend) pend.push(['— Nenhuma pendência —']);
+  const ws2=XLSX.utils.aoa_to_sheet(pend);
+  ws2['!cols']=[{wch:28},{wch:14},{wch:22},{wch:12},{wch:10},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Pendências');
+  XLSX.writeFile(wb,`Conferencia_Pedidos_${(fi.sigla||'Filial')}_${dt}.xlsx`);
+}
+function expPNG(wrId){
+  html2canvas(document.getElementById(wrId),{scale:2,backgroundColor:'#ffffff'}).then(c=>{
+    const a=document.createElement('a');a.href=c.toDataURL('image/png');
+    a.download=`Conferencia_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.png`;a.click();
+  });
+}
+function expPDF(wrId,tipo){
+  // PDF limpo e profissional — monta o conteúdo a partir dos DADOS (não do HTML cru).
+  // Recebe o tipo para saber o que renderizar: 'pedidos', 'sementes', 'canhotos', 'diag', 'apres'.
+  const fi=S.fi||{};
+  const dataGer=new Date().toLocaleDateString('pt-BR');
+  const css=`
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',Arial,sans-serif;color:#1a2236;padding:28px 32px;font-size:12px;}
+    .cab{display:flex;align-items:center;gap:14px;border-bottom:3px solid #2b7fd4;padding-bottom:14px;margin-bottom:18px;}
+    .logo{width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,#2b7fd4,#4d96e0);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .logo div{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+    .logo span{width:8px;height:8px;background:#fff;border-radius:2px;}
+    .logo span:nth-child(2),.logo span:nth-child(3){opacity:.5;}
+    .cab h1{font-size:17px;color:#0d2b6e;letter-spacing:.5px;}
+    .cab .sub{font-size:11px;color:#5a6480;margin-top:2px;}
+    .meta{display:flex;flex-wrap:wrap;gap:18px;background:#f4f6fb;border:1px solid #e2e6ee;border-radius:8px;padding:11px 16px;margin-bottom:18px;}
+    .meta .it{display:flex;flex-direction:column;}
+    .meta .l{font-size:9px;font-weight:700;text-transform:uppercase;color:#8590a8;letter-spacing:.5px;}
+    .meta .v{font-size:12px;font-weight:700;color:#1a2236;}
+    h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#5a6480;margin:18px 0 8px;border-left:3px solid #2b7fd4;padding-left:8px;}
+    .kpis{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+    .kpi{flex:1;min-width:120px;border:1px solid #e2e6ee;border-radius:8px;padding:10px 14px;border-top:3px solid #2b7fd4;}
+    .kpi.g{border-top-color:#14693a;}.kpi.r{border-top-color:#b01c1c;}.kpi.a{border-top-color:#b86c00;}
+    .kpi .kl{font-size:9px;font-weight:700;text-transform:uppercase;color:#8590a8;}
+    .kpi .kv{font-size:22px;font-weight:900;color:#1a2236;}
+    .kpi.g .kv{color:#14693a;}.kpi.r .kv{color:#b01c1c;}.kpi.a .kv{color:#b86c00;}
+    table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11px;}
+    th{background:#0d2b6e;color:#fff;padding:7px 9px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+    td{padding:6px 9px;border-bottom:1px solid #e2e6ee;}
+    tr:nth-child(even) td{background:#f8f9fc;}
+    .tot td{background:#0d2b6e!important;color:#fff;font-weight:800;}
+    .pend{color:#b01c1c;font-weight:700;}.ok{color:#14693a;font-weight:700;}
+    .rod{margin-top:24px;padding-top:12px;border-top:1px solid #e2e6ee;font-size:10px;color:#8590a8;display:flex;justify-content:space-between;}
+    @media print{body{padding:0;}@page{margin:1.4cm;}}
+  `;
+  const cab=`
+    <div class="cab">
+      <div class="logo"><div><span></span><span></span><span></span><span></span></div></div>
+      <div><h1>AGROQUIMA</h1><div class="sub">Conferência de Pedidos e Canhotos</div></div>
+    </div>
+    <div class="meta">
+      <div class="it"><span class="l">Filial</span><span class="v">${fi.loja||'—'} (${fi.sigla||'—'})</span></div>
+      <div class="it"><span class="l">Estado</span><span class="v">${fi.estado||'—'}</span></div>
+      <div class="it"><span class="l">Gerente</span><span class="v">${fi.gerente||'—'}</span></div>
+      <div class="it"><span class="l">Supervisor</span><span class="v">${fi.supervisor||'—'}</span></div>
+      <div class="it"><span class="l">Regional</span><span class="v">${fi.regional||'—'}</span></div>
+      <div class="it"><span class="l">Auditor</span><span class="v">${fi.auditor||'—'}</span></div>
+      <div class="it"><span class="l">Período</span><span class="v">${S.periodo||'—'}</span></div>
+    </div>`;
+
+  let corpo='';
+  if(tipo==='canhotos'){
+    const cv=agCanVend().sort((a,b)=>pct(b.pend,b.ass+b.pend)-pct(a.pend,a.ass+a.pend));
+    const cm=agCanMes();
+    let tC=0,tA=0,tP=0;cv.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;});
+    corpo+=`<h2>Indicadores — Canhotos</h2><div class="kpis">
+      <div class="kpi"><div class="kl">Conferidos</div><div class="kv">${tC}</div></div>
+      <div class="kpi g"><div class="kl">Assinados</div><div class="kv">${tA}</div></div>
+      <div class="kpi r"><div class="kl">Pendentes</div><div class="kv">${tP}</div></div>
+      <div class="kpi"><div class="kl">% Assinados</div><div class="kv">${fp(pct(tA,tC))}</div></div></div>`;
+    corpo+=`<h2>Por Mês</h2><table><tr><th>Mês</th><th>Conferidos</th><th>Assinados</th><th>Pendentes</th><th>% Pendente</th></tr>`;
+    cm.forEach(m=>{const t=m.ass+m.pend;corpo+=`<tr><td>${mesNome(m.mes)}</td><td>${t}</td><td>${m.ass}</td><td class="pend">${m.pend}</td><td class="pend">${fp(pct(m.pend,t))}</td></tr>`;});
+    corpo+=`</table>`;
+    corpo+=`<h2>Por Vendedor</h2><table><tr><th>Vendedor</th><th>Conferidos</th><th>Assinados</th><th>Pendentes</th><th>% Pendente</th></tr>`;
+    cv.forEach(v=>{const t=v.ass+v.pend;corpo+=`<tr><td>${nomeLimpo(v.vend)}</td><td>${t}</td><td>${v.ass}</td><td class="pend">${v.pend}</td><td>${fp(pct(v.pend,t))}</td></tr>`;});
+    corpo+=`<tr class="tot"><td>TOTAL</td><td>${tC}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tP,tC))}</td></tr></table>`;
+  }else if(tipo==='sementes'){
+    const sv=agSementesVend().sort((a,b)=>pct(a.ass,a.ass+a.pend)-pct(b.ass,b.ass+b.pend));
+    const risco=agRiscoSementes();
+    let tC=0,tA=0,tP=0;sv.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;});
+    corpo+=`<h2>Indicadores — Sementes (Zero Tolerância)</h2><div class="kpis">
+      <div class="kpi"><div class="kl">Conferidos</div><div class="kv">${tC}</div></div>
+      <div class="kpi g"><div class="kl">Assinados</div><div class="kv">${tA}</div></div>
+      <div class="kpi r"><div class="kl">Pendentes</div><div class="kv">${tP}</div></div>
+      <div class="kpi r"><div class="kl">Risco R$</div><div class="kv" style="font-size:15px">${risco.total.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div></div>`;
+    corpo+=`<h2>Por Vendedor</h2><table><tr><th>Vendedor</th><th>Conferidos</th><th>Assinados</th><th>Pendentes</th><th>% Assinados</th></tr>`;
+    sv.forEach(v=>{const t=v.ass+v.pend;corpo+=`<tr><td>${nomeLimpo(v.vend)}</td><td>${t}</td><td>${v.ass}</td><td class="${v.pend>0?'pend':''}">${v.pend}</td><td class="${pct(v.ass,t)>=100?'ok':'pend'}">${fp(pct(v.ass,t))}</td></tr>`;});
+    corpo+=`<tr class="tot"><td>TOTAL</td><td>${tC}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tA,tC))}</td></tr></table>`;
+    if(risco.itens.length){
+      corpo+=`<h2>Sementes Pendentes</h2><table><tr><th>Vendedor</th><th>Nº Pedido</th><th>Tipo</th><th>Valor R$</th></tr>`;
+      risco.itens.forEach(i=>corpo+=`<tr><td>${i.vend}</td><td>${i.ped}</td><td>${i.tipo}</td><td class="pend">${i.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`);
+      corpo+=`</table>`;
+    }
+  }else{ // pedidos (padrão)
+    const pv=agPedidosVend().sort((a,b)=>pct(a.ass,a.ass+a.pend)-pct(b.ass,b.ass+b.pend));
+    let tC=0,tA=0,tP=0,tSP=0;pv.forEach(v=>{tC+=v.ass+v.pend;tA+=v.ass;tP+=v.pend;tSP+=v.semPend;});
+    corpo+=`<h2>Indicadores — Pedidos de Venda</h2><div class="kpis">
+      <div class="kpi"><div class="kl">Conferidos</div><div class="kv">${tC}</div></div>
+      <div class="kpi g"><div class="kl">Assinados</div><div class="kv">${tA}</div></div>
+      <div class="kpi r"><div class="kl">Pendentes</div><div class="kv">${tP}</div></div>
+      <div class="kpi"><div class="kl">% Assinados</div><div class="kv">${fp(pct(tA,tC))}</div></div>
+      <div class="kpi ${tSP>0?'r':'g'}"><div class="kl">Sem. Pend.</div><div class="kv">${tSP}</div></div></div>`;
+    corpo+=`<h2>Desempenho por Vendedor</h2><table><tr><th>Vendedor</th><th>Conferidos</th><th>Assinados</th><th>Pendentes</th><th>% Assinados</th><th>Sem. Pend.</th></tr>`;
+    pv.forEach(v=>{const t=v.ass+v.pend;corpo+=`<tr><td>${nomeLimpo(v.vend)}</td><td>${t}</td><td>${v.ass}</td><td class="${v.pend>0?'pend':''}">${v.pend}</td><td class="${pct(v.ass,t)>=80?'ok':'pend'}">${fp(pct(v.ass,t))}</td><td class="${v.semPend>0?'pend':''}">${v.semPend}</td></tr>`;});
+    corpo+=`<tr class="tot"><td>TOTAL</td><td>${tC}</td><td>${tA}</td><td>${tP}</td><td>${fp(pct(tA,tC))}</td><td>${tSP}</td></tr></table>`;
+    // Pendências detalhadas
+    const temPend=pv.some(v=>v.dets.length);
+    if(temPend){
+      corpo+=`<h2>Relação de Pendências</h2><table><tr><th>Vendedor</th><th>Nº Pedido</th><th>Tipo</th><th>NT Fiscal</th><th>CFOP</th><th>Semente</th></tr>`;
+      pv.forEach(v=>v.dets.forEach(d=>corpo+=`<tr><td>${nomeLimpo(v.vend)}</td><td>${d.ped}</td><td>${d.tipo}</td><td>${d.nf}</td><td>${d.cfop}</td><td>${d.sem?'<span class="pend">SIM</span>':'—'}</td></tr>`));
+      corpo+=`</table>`;
+    }
+  }
+
+  const rod=`<div class="rod"><span>Gerado pelo painel de Conferência Agroquima</span><span>Emitido em ${dataGer}</span></div>`;
+  const pw=window.open('','_blank');
+  pw.document.write(`<html><head><title>Conferência ${fi.loja||''}</title><style>${css}</style></head><body>${cab}${corpo}${rod}</body></html>`);
+  pw.document.close();
+  setTimeout(()=>pw.print(),700);
+}
+
+// ============================================================
+// RESET FILTROS / DESCARREGAR / NAVEGAÇÃO
+// ============================================================
+
+// Reseta apenas filtros/ordenações — dados permanecem, rerenderiza tudo
+function resetarFiltros(){
+  if(!S.pedidos.length && !S.canhoto.length) return;
+  // Limpar classes de ordenação em todos os cabeçalhos
+  document.querySelectorAll('thead th').forEach(t=>t.classList.remove('asc','desc'));
+  // Recolher todos os detalhes abertos
+  document.querySelectorAll('.tr-det').forEach(r=>{
+    r.classList.add('hidden');
+    const btn=r.previousElementSibling?.querySelector('.btn-det');
+    if(btn) btn.textContent='▶ Detalhar';
+  });
+  // Rerenderizar todas as tabelas na ordem padrão
+  renderTudo();
+}
+
+// Descarrega completamente os dados e volta à tela de importação
+function descarregarDados(){
+  if(!confirm('Descarregar todos os dados e voltar ao início?')) return;
+  // Destruir gráficos para evitar vazamento
+  Object.values(_charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  _charts={};
+  S={pedidos:[],canhoto:[],semIds:new Set(),copiaIds:new Set(),semValor:{},fi:null,periodo:''};
+  document.getElementById('tela-import').classList.remove('hidden');
+  document.getElementById('painel').classList.add('hidden');
+  document.getElementById('arq-status').innerHTML='';
+  document.getElementById('fi').value='';
+  document.getElementById('topo-titulo').textContent='—';
+  document.getElementById('topo-sub').textContent='Nenhum arquivo importado';
+  mudarAba(0);
+}
+let _aba=0;
+function mudarAba(i){
+  _aba=i;
+  document.querySelectorAll('.aba').forEach((a,j)=>a.classList.toggle('ativa',j===i));
+  for(let j=0;j<9;j++) document.getElementById('aba-'+j)?.classList.toggle('hidden',j!==i);
+  if(i===7) renderHistorico();
+}
+
+
+// ============================================================
+// HISTÓRICO DE AUDITORIAS — ACUMULADOR
+// ============================================================
+
+// Carrega dados salvos no localStorage ao iniciar
+let H_DADOS = [];
+try {
+  const saved = localStorage.getItem('aqHistorico');
+  if(saved) H_DADOS = JSON.parse(saved);
+} catch(e) { H_DADOS = []; }
+
+function calcScore(d) {
+  // 4 itens: Semente(40) + Pedido(30) + Vencidos(20) + Canhoto(10) = 100
+  const sSem  = (d.semPend === 0) ? 40 : 0;
+  const sPed  = d.pedConf > 0 ? Math.min(d.pctPed / 95, 1) * 30 : 0;
+  const sVenc = d.scoreVenc != null ? (d.scoreVenc / 100) * 20 : 20; // assume 100% se não informado
+  const sCan  = d.canConf > 0 ? Math.min(d.pctCan / 95, 1) * 10 : 0;
+  return Math.round((sSem + sPed + sVenc + sCan) * 100) / 100;
+}
+
+function registrarAuditoria() {
+  if(!S.pedidos.length && !S.canhoto.length) {
+    document.getElementById('hist-aviso').style.display = 'flex';
+    document.getElementById('hist-aviso').textContent = '⚠ Importe os arquivos antes de registrar.';
+    return;
+  }
+  document.getElementById('hist-aviso').style.display = 'none';
+
+  // Coletar dados da auditoria atual
+  const fi = S.fi || {};
+  const pv = agPedidosVend();
+  const cv = agCanVend();
+  const risco = agRiscoSementes();
+
+  let pedConf=0, pedAss=0, pedPend=0;
+  pv.forEach(v=>{ pedConf+=v.ass+v.pend; pedAss+=v.ass; pedPend+=v.pend; });
+  let canConf=0, canAss=0, canPend=0;
+  cv.forEach(v=>{ canConf+=v.ass+v.pend; canAss+=v.ass; canPend+=v.pend; });
+
+  const pctPed = pedConf > 0 ? parseFloat((pedAss/pedConf*100).toFixed(2)) : 0;
+  const pctCan = canConf > 0 ? parseFloat((canAss/canConf*100).toFixed(2)) : 0;
+  const semPend = risco.itens.length;
+
+  // Período a partir do período calculado
+  const periodo = S.periodo || new Date().toLocaleDateString('pt-BR');
+
+  const registro = {
+    id: Date.now(),
+    filial: fi.sigla || fi.loja || '—',
+    loja: fi.loja || '—',
+    gerente: fi.gerente || '—',
+    periodo,
+    pedConf, pedAss, pedPend, pctPed,
+    semPend,
+    canConf, canAss, canPend, pctCan,
+    scoreVenc: null, // preenchível depois
+    dataReg: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+  };
+  registro.score = calcScore(registro);
+
+  // Verificar se já existe registro da mesma filial e período (atualiza)
+  const idx = H_DADOS.findIndex(d => d.filial === registro.filial && d.periodo === registro.periodo);
+  if(idx >= 0) {
+    if(!confirm(`Já existe um registro de ${registro.filial} para ${registro.periodo}. Substituir?`)) return;
+    H_DADOS[idx] = registro;
+  } else {
+    H_DADOS.push(registro);
+  }
+
+  // Salvar no localStorage
+  try { localStorage.setItem('aqHistorico', JSON.stringify(H_DADOS)); } catch(e) {}
+
+  renderHistorico();
+
+  // Feedback visual no botão
+  const btn = document.getElementById('btn-registrar');
+  const orig = btn.textContent;
+  btn.textContent = '✔ Registrado!';
+  btn.style.background = '#14693a';
+  setTimeout(()=>{ btn.textContent = orig; btn.style.background = ''; }, 2500);
+}
+
+function removerRegistro(id) {
+  if(!confirm('Remover este registro do histórico?')) return;
+  H_DADOS = H_DADOS.filter(d => d.id !== id);
+  try { localStorage.setItem('aqHistorico', JSON.stringify(H_DADOS)); } catch(e) {}
+  renderHistorico();
+}
+
+function scoreClass(s) {
+  if(s >= 90) return 's-ouro';
+  if(s >= 75) return 's-verde';
+  if(s >= 60) return 's-amar';
+  return 's-verm';
+}
+
+function renderHistorico() {
+  const vazio = document.getElementById('hist-vazio');
+  const tabela = document.getElementById('tb-hist');
+  const kpis = document.getElementById('hist-kpis');
+
+  if(!H_DADOS.length) {
+    vazio.style.display = 'block';
+    tabela.style.display = 'none';
+    kpis.style.display = 'none';
+    return;
+  }
+  vazio.style.display = 'none';
+  tabela.style.display = 'table';
+  kpis.style.display = 'flex';
+
+  // KPIs do histórico
+  const totalAud  = H_DADOS.length;
+  const mediaScore = (H_DADOS.reduce((s,d)=>s+d.score,0)/totalAud).toFixed(1);
+  const semZero    = H_DADOS.filter(d=>d.semPend===0).length;
+  const pctSemZero = Math.round(semZero/totalAud*100);
+  const metaPed    = H_DADOS.filter(d=>d.pctPed>=95).length;
+  const metaCan    = H_DADOS.filter(d=>d.pctCan>=95).length;
+
+  kpis.innerHTML = [
+    ['Auditorias Registradas', totalAud, 'var(--brand)'],
+    ['Score Médio', mediaScore + ' pts', totalAud ? 'var(--verde,#14693a)' : 'var(--text3)'],
+    ['Semente = Zero', `${semZero}/${totalAud} (${pctSemZero}%)`, '#14693a'],
+    ['Meta Pedido ≥95%', `${metaPed}/${totalAud}`, '#2b7fd4'],
+    ['Meta Canhoto ≥95%', `${metaCan}/${totalAud}`, '#2b7fd4'],
+  ].map(([l,v,c])=>`
+    <div class="hist-kpi-card" style="border-top-color:${c}">
+      <div class="kl">${l}</div>
+      <div class="kv" style="color:${c}">${v}</div>
+    </div>
+  `).join('');
+
+  // Tabela — ordenada por data de registro (mais recente primeiro)
+  const sorted = [...H_DADOS].sort((a,b)=>b.id-a.id);
+  const tbody = document.getElementById('body-hist');
+  tbody.innerHTML = sorted.map((d,i) => {
+    const sc = d.score;
+    const scClass = scoreClass(sc);
+    const semCor = d.semPend > 0 ? 'color:#b01c1c;font-weight:900' : 'color:#14693a';
+    const pPedCor = d.pctPed >= 95 ? 'color:#14693a;font-weight:700' : (d.pctPed >= 80 ? 'color:#b86c00;font-weight:700' : 'color:#b01c1c;font-weight:700');
+    const pCanCor = d.pctCan >= 95 ? 'color:#14693a;font-weight:700' : (d.pctCan >= 80 ? 'color:#b86c00;font-weight:700' : 'color:#b01c1c;font-weight:700');
+    return `<tr>
+      <td style="color:var(--text3);font-size:11px">${i+1}</td>
+      <td><b>${d.filial}</b><br><span style="font-size:10px;color:var(--text3)">${d.loja}</span></td>
+      <td>${d.periodo}</td>
+      <td style="${pPedCor}">${d.pctPed.toFixed(2)}%</td>
+      <td>${d.pedConf}</td>
+      <td>${d.pedAss}</td>
+      <td style="${d.pedPend>0?'color:#b01c1c;font-weight:700':''}">${d.pedPend}</td>
+      <td style="${semCor}">${d.semPend === 0 ? '✔ 0' : '⚠ ' + d.semPend}</td>
+      <td style="${pCanCor}">${d.pctCan.toFixed(2)}%</td>
+      <td>${d.canConf}</td>
+      <td>${d.canAss}</td>
+      <td style="${d.canPend>0?'color:#b01c1c;font-weight:700':''}">${d.canPend}</td>
+      <td><span class="hist-score ${scClass}">${sc.toFixed(1)}</span></td>
+      <td style="font-size:10px;color:var(--text3)">${d.dataReg}</td>
+      <td><button class="btn-del-hist" onclick="removerRegistro(${d.id})" title="Remover">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function expHistoricoJSON() {
+  if(!H_DADOS.length) { alert('Nenhuma auditoria registrada ainda.'); return; }
+  const dt  = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  const blob = new Blob([JSON.stringify(H_DADOS, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `Historico_Agroquima_${dt}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function expHistoricoXLS() {
+  if(!H_DADOS.length) { alert('Nenhuma auditoria registrada ainda.'); return; }
+
+  const wb = XLSX.utils.book_new();
+  const dt = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+
+  // Aba 1: Lançamentos — formato compatível com o Acumulador Excel
+  const header = [
+    'Filial','Loja (Nome)','Período','Gerente',
+    '% Pedidos Ass.','Ped. Conferíveis','Ped. Assinados','Ped. Pendentes','Sem. Pendentes',
+    '% Canhotos Ass.','Can. Conferíveis','Can. Assinados','Can. Pendentes',
+    'Score Vencidos','Score Final','Data Registro'
+  ];
+  const rows = [header];
+  H_DADOS.forEach(d => {
+    rows.push([
+      d.filial, d.loja, d.periodo, d.gerente,
+      d.pctPed, d.pedConf, d.pedAss, d.pedPend, d.semPend,
+      d.pctCan, d.canConf, d.canAss, d.canPend,
+      d.scoreVenc != null ? d.scoreVenc : '',
+      d.score, d.dataReg
+    ]);
+  });
+  const ws1 = XLSX.utils.aoa_to_sheet(rows);
+  ws1['!cols'] = [
+    {wch:8},{wch:20},{wch:14},{wch:18},
+    {wch:13},{wch:13},{wch:12},{wch:12},{wch:12},
+    {wch:13},{wch:13},{wch:12},{wch:12},
+    {wch:13},{wch:11},{wch:18}
+  ];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Lançamentos');
+
+  // Aba 2: Ranking — agrupado por filial, média do score
+  const porFilial = {};
+  H_DADOS.forEach(d => {
+    if(!porFilial[d.filial]) porFilial[d.filial] = {filial:d.filial,loja:d.loja,regs:[],scores:[],semZero:0};
+    porFilial[d.filial].regs.push(d);
+    porFilial[d.filial].scores.push(d.score);
+    if(d.semPend===0) porFilial[d.filial].semZero++;
+  });
+  const rank = Object.values(porFilial)
+    .map(f => ({
+      ...f,
+      mediaScore: parseFloat((f.scores.reduce((a,b)=>a+b,0)/f.scores.length).toFixed(1)),
+      maxScore: Math.max(...f.scores),
+      minScore: Math.min(...f.scores),
+      auditorias: f.regs.length,
+      pctSemZero: Math.round(f.semZero/f.regs.length*100),
+    }))
+    .sort((a,b) => b.mediaScore - a.mediaScore);
+
+  const rankHeader = ['#','Filial','Nome','Auditorias','Score Médio','Score Máx','Score Mín','% Semente Zero'];
+  const rankRows = [rankHeader];
+  rank.forEach((f,i) => rankRows.push([
+    i+1, f.filial, f.loja, f.auditorias,
+    f.mediaScore, f.maxScore, f.minScore, f.pctSemZero+'%'
+  ]));
+  const ws2 = XLSX.utils.aoa_to_sheet(rankRows);
+  ws2['!cols'] = [{wch:4},{wch:8},{wch:20},{wch:12},{wch:12},{wch:12},{wch:12},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Ranking por Filial');
+
+  // Aba 3: Backup JSON (para reimportar depois)
+  const ws3 = XLSX.utils.aoa_to_sheet([
+    ['BACKUP — Cole este JSON para reimportar o histórico:'],
+    [JSON.stringify(H_DADOS)]
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws3, 'Backup JSON');
+
+  XLSX.writeFile(wb, `Acumulador_Agroquima_${dt}.xlsx`);
+}
+
+function importarHistoricoJSON() {
+  document.getElementById('inp-hist-json').click();
+}
+
+function lerArquivoHistorico(input) {
+  const file = input.files[0];
+  if(!file) return;
+
+  const nome = file.name.toLowerCase();
+
+  // Aceita XLSX (arquivo gerado pelo "Exportar Acumulador") ou JSON puro
+  if(nome.endsWith('.xlsx') || nome.endsWith('.xls')) {
+    // Ler xlsx via SheetJS — extrair aba "Backup JSON" ou "Lançamentos"
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+
+        // Estratégia 1: ler do Backup JSON (formato preferencial)
+        if(wb.SheetNames.includes('Backup JSON')) {
+          const ws  = wb.Sheets['Backup JSON'];
+          const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+          // Linha 2 (índice 1) contém o JSON
+          const jsonStr = rows[1] && rows[1][0];
+          if(jsonStr && String(jsonStr).trim().startsWith('[')) {
+            _processarHistoricoImportado(JSON.parse(jsonStr));
+            return;
+          }
+        }
+
+        // Estratégia 2: ler da aba Lançamentos e reconstruir os registros
+        if(wb.SheetNames.includes('Lançamentos')) {
+          const ws   = wb.Sheets['Lançamentos'];
+          const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+          // Linha 5 em diante são dados (índice 4)
+          // Colunas: 0=#, 1=Filial, 2=Loja, 3=Período, 4=Gerente,
+          //          5=%Ped, 6=PedConf, 7=PedAss, 8=PedPend, 9=SemPend,
+          //          10=%Can, 11=CanConf, 12=CanAss, 13=CanPend,
+          //          14=ScoreVenc, 15=ScoreFinal, 16=DataReg
+          const dados = [];
+          for(let i=4; i<rows.length; i++) {
+            const r = rows[i];
+            if(!r[1] || !r[3]) continue; // sem filial ou período
+            dados.push({
+              id: Date.now() + i,
+              filial:    String(r[1]||''),
+              loja:      String(r[2]||''),
+              gerente:   String(r[4]||''),
+              periodo:   String(r[3]||''),
+              pctPed:    parseFloat(r[5])||0,
+              pedConf:   parseInt(r[6])||0,
+              pedAss:    parseInt(r[7])||0,
+              pedPend:   parseInt(r[8])||0,
+              semPend:   parseInt(r[9])||0,
+              pctCan:    parseFloat(r[10])||0,
+              canConf:   parseInt(r[11])||0,
+              canAss:    parseInt(r[12])||0,
+              canPend:   parseInt(r[13])||0,
+              scoreVenc: r[14]!==''&&r[14]!=null ? parseFloat(r[14]) : null,
+              score:     parseFloat(r[15])||0,
+              dataReg:   String(r[16]||''),
+            });
+          }
+          if(dados.length) { _processarHistoricoImportado(dados); return; }
+        }
+        alert('Arquivo não reconhecido. Use o arquivo gerado pelo botão "📥 Exportar Acumulador".');
+      } catch(err) {
+        alert('Erro ao ler o arquivo: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    input.value = '';
+    return;
+  }
+
+  // JSON puro
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const dados = JSON.parse(e.target.result);
+      if(!Array.isArray(dados)) throw new Error('Formato inválido');
+      _processarHistoricoImportado(dados);
+    } catch(err) {
+      alert('Arquivo inválido. Use o arquivo .xlsx ou .json exportado pelo botão "📥 Exportar Acumulador".');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function _processarHistoricoImportado(dados) {
+  const idsExistentes = new Set(H_DADOS.map(d=>d.id));
+  let adicionados = 0;
+  dados.forEach(d => {
+    if(!idsExistentes.has(d.id)) {
+      // Recalcular score se não tiver
+      if(!d.score) d.score = calcScore(d);
+      H_DADOS.push(d);
+      adicionados++;
+    }
+  });
+  try { localStorage.setItem('aqHistorico', JSON.stringify(H_DADOS)); } catch(e) {}
+  renderHistorico();
+  alert(`Histórico carregado: ${dados.length} registro(s) — ${adicionados} novo(s) adicionado(s).`);
+}
+
+// Renderiza histórico ao carregar se já houver dados salvos
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(H_DADOS.length) renderHistorico();
+});
+
+// ============================================================
+// FIM HISTÓRICO
+// ============================================================
+
+// Drag & Drop
+function evDrag(e){e.preventDefault();document.getElementById('drop-zone').classList.add('over');}
+function dlDrag(){document.getElementById('drop-zone').classList.remove('over');}
+function dropArq(e){e.preventDefault();dlDrag();handleFiles(e.dataTransfer.files);}
+
+</script>
+</body>
+</html>
